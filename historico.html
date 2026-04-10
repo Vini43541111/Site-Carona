@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CaronaUni – Histórico</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .hist-card {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      padding: 1rem 1.25rem;
+      transition: border-color .15s;
+    }
+
+    .hist-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: .75rem;
+    }
+
+    .hist-date {
+      font-size: .75rem;
+      color: var(--text-light);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin: 1.25rem 0 .65rem;
+    }
+
+    .hist-person {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+
+    .hist-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: .85rem; font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .hist-actions {
+      display: flex;
+      gap: .5rem;
+      margin-top: .75rem;
+      padding-top: .75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .rating-inline {
+      display: flex;
+      gap: 2px;
+      font-size: .85rem;
+    }
+    .rating-inline .s { color: var(--warning); }
+    .rating-inline .s.off { color: #ddd; }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 640px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+
+    .month-summary {
+      background: var(--accent);
+      border-radius: var(--radius-sm);
+      padding: .75rem 1rem;
+      font-size: .85rem;
+      color: var(--secondary-dk);
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="dashboard.html" class="header-logo">🎓 <span>Carona</span>Uni</a>
+    <nav class="header-nav">
+      <a href="dashboard.html">🏠 Início</a>
+      <a href="buscar.html">🔍 Buscar Carona</a>
+      <a href="criar.html">➕ Oferecer</a>
+      <a href="solicitacoes.html">📋 Solicitações</a>
+      <a href="historico.html" class="active">📜 Histórico</a>
+    </nav>
+    <div class="header-user">
+      <div class="avatar">V</div>
+      <span>Olá, Vinicius ▾</span>
+    </div>
+  </header>
+
+  <div class="page">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+      <h1 style="font-size:1.3rem; color:var(--primary);">📜 Histórico de Caronas</h1>
+      <div style="display:flex; gap:.5rem;">
+        <select class="form-control" style="width:auto;font-size:.82rem;padding:.35rem .7rem;">
+          <option>Abril 2026</option>
+          <option>Março 2026</option>
+          <option>Fevereiro 2026</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="card" style="text-align:center;padding:1rem;">
+        <div style="font-size:1.75rem;font-weight:700;color:var(--primary);">12</div>
+        <div style="font-size:.78rem;color:var(--text-light);">Caronas totais</div>
+      </div>
+      <div class="card" style="text-align:center;padding:1rem;">
+        <div style="font-size:1.75rem;font-weight:700;color:var(--secondary);">7</div>
+        <div style="font-size:.78rem;color:var(--text-light);">Como passageiro</div>
+      </div>
+      <div class="card" style="text-align:center;padding:1rem;">
+        <div style="font-size:1.75rem;font-weight:700;color:#1565c0;">5</div>
+        <div style="font-size:.78rem;color:var(--text-light);">Como motorista</div>
+      </div>
+      <div class="card" style="text-align:center;padding:1rem;">
+        <div style="font-size:1.75rem;font-weight:700;color:#e65100;">24 kg</div>
+        <div style="font-size:.78rem;color:var(--text-light);">CO₂ economizado 🌿</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs" style="margin-bottom:1.25rem;">
+      <a class="tab active" onclick="showTab('todas',this)">📋 Todas</a>
+      <a class="tab" onclick="showTab('proximas',this)">📅 Próximas</a>
+      <a class="tab" onclick="showTab('passadas',this)">✅ Realizadas</a>
+      <a class="tab" onclick="showTab('pendente-aval',this)">⭐ Avaliar <span class="badge badge-orange" style="margin-left:.3rem;">2</span></a>
+    </div>
+
+    <!-- TODAS -->
+    <div id="tab-todas">
+
+      <div class="month-summary">
+        <span>📅 Abril 2026</span>
+        <span>🚗 3 realizadas</span>
+        <span>⏳ 2 agendadas</span>
+        <span>⭐ Média: 4.8</span>
+      </div>
+
+      <!-- Upcoming -->
+      <div class="hist-date">📅 Próximas</div>
+
+      <div style="display:flex; flex-direction:column; gap:.75rem; margin-bottom:1rem;">
+        <div class="hist-card" style="border-color:#a5d6a7; background:#f1f8e9;">
+          <div class="hist-header">
+            <div>
+              <div style="font-weight:700; color:var(--primary);">Centro → Campus Unoesc</div>
+              <div style="font-size:.78rem; color:var(--text-light); margin-top:.2rem;">📅 Hoje · ⏰ 07:30</div>
+            </div>
+            <span class="badge badge-green">Confirmada</span>
+          </div>
+          <div class="hist-person">
+            <div class="hist-avatar" style="background:linear-gradient(135deg,var(--primary-mid),var(--secondary));">CM</div>
+            <div>
+              <div style="font-size:.85rem; font-weight:600;">Carlos Medeiros</div>
+              <div style="font-size:.75rem; color:var(--text-light);">🚗 Fiat Uno Prata · 👥 Passageiro</div>
+            </div>
+          </div>
+          <div class="hist-actions">
+            <a href="detalhes.html" class="btn btn-outline btn-sm">Ver detalhes</a>
+            <button class="btn btn-ghost btn-sm" onclick="if(confirm('Cancelar esta carona?'))alert('Carona cancelada.')">🚫 Cancelar</button>
+          </div>
+        </div>
+
+        <div class="hist-card" style="border-color:#90caf9; background:#e3f2fd;">
+          <div class="hist-header">
+            <div>
+              <div style="font-weight:700; color:var(--primary);">Campus Unoesc → Bairro Efapi</div>
+              <div style="font-size:.78rem; color:var(--text-light); margin-top:.2rem;">📅 Hoje · ⏰ 17:45</div>
+            </div>
+            <span class="badge badge-blue">Você oferece</span>
+          </div>
+          <div class="hist-person">
+            <div style="display:flex; gap:.4rem;">
+              <div class="hist-avatar" style="background:linear-gradient(135deg,#e91e63,#9c27b0); font-size:.72rem;">AS</div>
+              <div class="hist-avatar" style="background:linear-gradient(135deg,#ff9800,#795548); font-size:.72rem; margin-left:-10px; border:2px solid #e3f2fd;">RP</div>
+            </div>
+            <div>
+              <div style="font-size:.85rem; font-weight:600;">Ana Souza, Rafael Pereira</div>
+              <div style="font-size:.75rem; color:var(--text-light);">🚗 Gol Preto · 👤 Motorista · 2 passageiros</div>
+            </div>
+          </div>
+          <div class="hist-actions">
+            <a href="solicitacoes.html" class="btn btn-outline btn-sm">Gerenciar</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Past -->
+      <div class="hist-date">✅ Realizadas – Esta semana</div>
+
+      <div style="display:flex; flex-direction:column; gap:.75rem;">
+
+        <div class="hist-card">
+          <div class="hist-header">
+            <div>
+              <div style="font-weight:700;">Centro → Campus Unoesc</div>
+              <div style="font-size:.78rem; color:var(--text-light); margin-top:.2rem;">📅 09/04/2026 · ⏰ 07:30 · ⏱ 19 min</div>
+            </div>
+            <span class="badge badge-gray">Concluída</span>
+          </div>
+          <div class="hist-person">
+            <div class="hist-avatar" style="background:linear-gradient(135deg,var(--primary-mid),var(--secondary));">CM</div>
+            <div style="flex:1;">
+              <div style="font-size:.85rem; font-weight:600;">Carlos Medeiros</div>
+              <div style="font-size:.75rem; color:var(--text-light);">🚗 Fiat Uno Prata</div>
+            </div>
+            <div class="rating-inline">
+              <span class="s">★</span><span class="s">★</span><span class="s">★</span><span class="s">★</span><span class="s">★</span>
+              <span style="font-size:.75rem; color:var(--text-light); margin-left:.3rem;">5.0</span>
+            </div>
+          </div>
+          <div class="hist-actions">
+            <a href="detalhes.html" class="btn btn-ghost btn-sm">Ver detalhes</a>
+            <span class="badge badge-green" style="font-size:.78rem;">✅ Avaliado</span>
+          </div>
+        </div>
+
+        <div class="hist-card">
+          <div class="hist-header">
+            <div>
+              <div style="font-weight:700;">Campus Unoesc → Centro</div>
+              <div style="font-size:.78rem; color:var(--text-light); margin-top:.2rem;">📅 08/04/2026 · ⏰ 17:30 · ⏱ 21 min</div>
+            </div>
+            <span class="badge badge-gray">Concluída</span>
+          </div>
+          <div class="hist-person">
+            <div class="hist-avatar" style="background:linear-gradient(135deg,#ff9800,#f44336);">JO</div>
+            <div style="flex:1;">
+              <div style="font-size:.85rem; font-weight:600;">João Oliveira</div>
+              <div style="font-size:.75rem; color:var(--text-light);">🚗 Gol Preto</div>
+            </div>
+            <div class="rating-inline">
+              <span class="s">★</span><span class="s">★</span><span class="s">★</span><span class="s">★</span><span class="s off">★</span>
+              <span style="font-size:.75rem; color:var(--text-light); margin-left:.3rem;">4.0</span>
+            </div>
+          </div>
+          <div class="hist-actions">
+            <a href="detalhes.html" class="btn btn-ghost btn-sm">Ver detalhes</a>
+            <span class="badge badge-green">✅ Avaliado</span>
+          </div>
+        </div>
+
+        <div class="hist-card">
+          <div class="hist-header">
+            <div>
+              <div style="font-weight:700;">Bairro Efapi → Campus Unoesc</div>
+              <div style="font-size:.78rem; color:var(--text-light); margin-top:.2rem;">📅 07/04/2026 · ⏰ 07:45 · ⏱ 23 min</div>
+            </div>
+            <span class="badge badge-gray">Concluída</span>
+          </div>
+          <div class="hist-person">
+            <div class="hist-avatar" style="background:linear-gradient(135deg,#e91e63,#9c27b0);">AS</div>
+            <div style="flex:1;">
+              <div style="font-size:.85rem; font-weight:600;">Ana Souza</div>
+              <div style="font-size:.75rem; color:var(--text-light);">🚗 HB20 Branco</div>
+            </div>
+            <div style="color:var(--warning); font-size:.82rem;">⚠️ Pendente</div>
+          </div>
+          <div class="hist-actions">
+            <a href="avaliacao.html" class="btn btn-primary btn-sm">⭐ Avaliar agora</a>
+            <a href="detalhes.html" class="btn btn-ghost btn-sm">Detalhes</a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- PROXIMAS -->
+    <div id="tab-proximas" style="display:none;">
+      <div style="display:flex; flex-direction:column; gap:.75rem;">
+        <div class="hist-card" style="border-color:#a5d6a7;">
+          <div class="hist-header">
+            <div>
+              <div style="font-weight:700;">Centro → Campus Unoesc</div>
+              <div style="font-size:.78rem; color:var(--text-light);">📅 Hoje · ⏰ 07:30 · Carlos Medeiros</div>
+            </div>
+            <span class="badge badge-green">Confirmada</span>
+          </div>
+          <div class="hist-actions">
+            <a href="detalhes.html" class="btn btn-outline btn-sm">Ver detalhes</a>
+            <button class="btn btn-ghost btn-sm">🚫 Cancelar</button>
+          </div>
+        </div>
+        <div class="hist-card" style="border-color:#90caf9;">
+          <div class="hist-header">
+            <div>
+              <div style="font-weight:700;">Campus Unoesc → Bairro Efapi</div>
+              <div style="font-size:.78rem; color:var(--text-light);">📅 Hoje · ⏰ 17:45 · Você oferece</div>
+            </div>
+            <span class="badge badge-blue">Você oferece</span>
+          </div>
+          <div class="hist-actions">
+            <a href="solicitacoes.html" class="btn btn-outline btn-sm">Gerenciar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASSADAS -->
+    <div id="tab-passadas" style="display:none;">
+      <div style="display:flex; flex-direction:column; gap:.75rem;">
+        <div class="hist-card">
+          <div style="font-weight:700;">Centro → Campus · 09/04 · Carlos Medeiros</div>
+          <div style="margin-top:.4rem;" class="rating-inline">
+            <span class="s">★</span><span class="s">★</span><span class="s">★</span><span class="s">★</span><span class="s">★</span>
+            <span style="font-size:.75rem;color:var(--text-light);margin-left:.3rem;">5.0 · Avaliado</span>
+          </div>
+        </div>
+        <div class="hist-card">
+          <div style="font-weight:700;">Campus → Centro · 08/04 · João Oliveira</div>
+          <div style="margin-top:.4rem;" class="rating-inline">
+            <span class="s">★</span><span class="s">★</span><span class="s">★</span><span class="s">★</span><span class="s off">★</span>
+            <span style="font-size:.75rem;color:var(--text-light);margin-left:.3rem;">4.0 · Avaliado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AVALIAR -->
+    <div id="tab-pendente-aval" style="display:none;">
+      <div class="alert alert-warning">⭐ Você tem 2 caronas aguardando avaliação!</div>
+      <div style="display:flex; flex-direction:column; gap:.75rem;">
+        <div class="hist-card" style="border-color:var(--warning);">
+          <div style="font-weight:700;">Efapi → Campus · 07/04 · Ana Souza</div>
+          <div style="font-size:.82rem; color:var(--text-light); margin:.3rem 0;">🚗 HB20 Branco · Como passageiro</div>
+          <div class="hist-actions">
+            <a href="avaliacao.html" class="btn btn-primary">⭐ Avaliar agora</a>
+          </div>
+        </div>
+        <div class="hist-card" style="border-color:var(--warning);">
+          <div style="font-weight:700;">Centro → Campus · 05/04 · Maria Lima</div>
+          <div style="font-size:.82rem; color:var(--text-light); margin:.3rem 0;">🚗 Ônix Vermelho · Como passageiro</div>
+          <div class="hist-actions">
+            <a href="avaliacao.html" class="btn btn-primary">⭐ Avaliar agora</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function showTab(name, el) {
+      document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+      document.getElementById('tab-' + name).style.display = 'block';
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+    }
+  </script>
+</body>
+</html>

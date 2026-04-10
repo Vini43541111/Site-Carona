@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CaronaUni – Avaliação</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .star-rating {
+      display: flex;
+      gap: .5rem;
+      justify-content: center;
+      font-size: 2.5rem;
+      margin: 1rem 0;
+      cursor: pointer;
+    }
+    .star-rating .star {
+      transition: transform .15s, color .15s;
+      color: #ddd;
+      user-select: none;
+    }
+    .star-rating .star:hover,
+    .star-rating .star.hovered { transform: scale(1.2); color: var(--warning); }
+    .star-rating .star.selected { color: var(--warning); }
+
+    .rating-label {
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      min-height: 1.6rem;
+      transition: all .2s;
+    }
+
+    .quick-tags {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: .75rem 0;
+    }
+    .quick-tag {
+      padding: .35rem .85rem;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      font-size: .82rem;
+      cursor: pointer;
+      transition: all .15s;
+      background: #fff;
+    }
+    .quick-tag:hover, .quick-tag.on {
+      background: var(--accent);
+      border-color: var(--secondary);
+      color: var(--secondary-dk);
+      font-weight: 600;
+    }
+
+    .ride-summary-card {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      color: #fff;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .ride-summary-icon {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .avaliacao-secao {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .secao-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .criterio-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: .65rem 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: .88rem;
+    }
+    .criterio-row:last-child { border-bottom: none; }
+    .criterio-stars { display: flex; gap: 3px; }
+    .criterio-star { font-size: 1.1rem; color: #ddd; cursor: pointer; transition: color .1s; }
+    .criterio-star.on { color: var(--warning); }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="dashboard.html" class="header-logo">🎓 <span>Carona</span>Uni</a>
+    <nav class="header-nav">
+      <a href="dashboard.html">🏠 Início</a>
+      <a href="buscar.html">🔍 Buscar Carona</a>
+      <a href="criar.html">➕ Oferecer</a>
+      <a href="solicitacoes.html">📋 Solicitações</a>
+      <a href="historico.html">📜 Histórico</a>
+    </nav>
+    <div class="header-user">
+      <div class="avatar">V</div>
+      <span>Olá, Vinicius ▾</span>
+    </div>
+  </header>
+
+  <div class="page-sm">
+
+    <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:1.25rem;">
+      <a href="historico.html" class="btn btn-ghost btn-sm">← Voltar</a>
+      <h1 style="font-size:1.2rem; color:var(--primary);">⭐ Avaliar Carona</h1>
+    </div>
+
+    <!-- Ride Summary -->
+    <div class="ride-summary-card">
+      <div class="ride-summary-icon">🚗</div>
+      <div>
+        <div style="font-weight:700; font-size:1rem; margin-bottom:.25rem;">
+          Centro → Campus Unoesc
+        </div>
+        <div style="font-size:.82rem; opacity:.85;">
+          📅 09/04/2026 · ⏰ 07:30 · Carlos Medeiros · Fiat Uno Prata
+        </div>
+        <div style="font-size:.78rem; opacity:.7; margin-top:.2rem;">
+          ⏱ Duração: 19 min · 📏 ~12 km
+        </div>
+      </div>
+    </div>
+
+    <!-- Avaliação Geral -->
+    <div class="avaliacao-secao">
+      <div class="secao-title">👤 Avaliar Carlos Medeiros</div>
+
+      <div style="text-align:center;">
+        <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--primary-mid),var(--secondary));display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.8rem;font-weight:700;margin:0 auto .75rem;">CM</div>
+        <div style="font-size:.9rem; color:var(--text-light); margin-bottom:.5rem;">Como foi sua experiência com este motorista?</div>
+      </div>
+
+      <div class="star-rating" id="star-geral" onmouseleave="resetHover()">
+        <span class="star" data-val="1" onmouseover="hoverStar(1)" onclick="selectStar(1)">★</span>
+        <span class="star" data-val="2" onmouseover="hoverStar(2)" onclick="selectStar(2)">★</span>
+        <span class="star" data-val="3" onmouseover="hoverStar(3)" onclick="selectStar(3)">★</span>
+        <span class="star" data-val="4" onmouseover="hoverStar(4)" onclick="selectStar(4)">★</span>
+        <span class="star" data-val="5" onmouseover="hoverStar(5)" onclick="selectStar(5)">★</span>
+      </div>
+
+      <div class="rating-label" id="rating-label">Toque nas estrelas para avaliar</div>
+
+      <!-- Quick Tags -->
+      <div style="font-size:.82rem; color:var(--text-light); text-align:center; margin-top:1rem; margin-bottom:.5rem;">
+        O que você destacaria? (opcional)
+      </div>
+      <div class="quick-tags" id="quick-tags">
+        <span class="quick-tag" onclick="this.classList.toggle('on')">⏰ Pontual</span>
+        <span class="quick-tag" onclick="this.classList.toggle('on')">🧹 Carro limpo</span>
+        <span class="quick-tag" onclick="this.classList.toggle('on')">😊 Simpático</span>
+        <span class="quick-tag" onclick="this.classList.toggle('on')">🚗 Direção segura</span>
+        <span class="quick-tag" onclick="this.classList.toggle('on')">🎵 Boa música</span>
+        <span class="quick-tag" onclick="this.classList.toggle('on')">❄️ Ar-condicionado</span>
+        <span class="quick-tag" onclick="this.classList.toggle('on')">💬 Boa conversa</span>
+        <span class="quick-tag" onclick="this.classList.toggle('on')">📍 Rota precisa</span>
+      </div>
+    </div>
+
+    <!-- Critérios Detalhados -->
+    <div class="avaliacao-secao">
+      <div class="secao-title">📊 Critérios Detalhados</div>
+
+      <div class="criterio-row">
+        <span>⏰ Pontualidade</span>
+        <div class="criterio-stars" data-key="pontualidade">
+          <span class="criterio-star" onclick="setDetalhe(this,1)">★</span>
+          <span class="criterio-star" onclick="setDetalhe(this,2)">★</span>
+          <span class="criterio-star" onclick="setDetalhe(this,3)">★</span>
+          <span class="criterio-star" onclick="setDetalhe(this,4)">★</span>
+          <span class="criterio-star" onclick="setDetalhe(this,5)">★</span>
+        </div>
+      </div>
+
+      <div class="criterio-row">
+        <span>🚗 Qualidade da condução</span>
+        <div class="criterio-stars" data-key="conducao">
+          <span class="criterio-star" onclick="setDetalhe(this,1)">★</span>
+          <span class="criterio-star" onclick="setDetalhe(this,2)">★</span>
+          <span class="criterio-star" onclick="setDetalhe(this,3)">★</span>
+          <span class="criterio-star" onclick="setDetalhe(this,4)">★</span>
+          <span class="criterio-star" onclick="setDetalhe(this,5)">★</span>
+        </div>
+      </div>
+
+      <div class="criterio-row">
+        <span>🧹 Limpeza do veículo</span>
+        <div class="criterio-stars" data-key="limpeza">
+          <span class="criterio-star" onclick="setDetalhe(this,1)">★</span>
+          <span class="criterio-star" onclick="setDetalhe(this,2)">★</span>
+          <span class="criterio-star" onclick="setDetalhe(this,3)">★</span>
+          <span class="criterio-star" onclick="setDetalhe(this,4)">★</span>
+          <span class="criterio-star" onclick="setDetalhe(this,5)">★</span>
+        </div>
+      </div>
+
+      <div class="criterio-row">
+        <span>💬 Comunicação</span>
+        <div class="criterio-stars" data-key="comunicacao">
+          <span class="criterio-star" onclick="setDetalhe(this,1)">★</span>
+          <span class="criterio-star" onclick="setDetalhe(this,2)">★</span>
+          <span class="criterio-star" onclick="setDetalhe(this,3)">★</span>
+          <span class="criterio-star" onclick="setDetalhe(this,4)">★</span>
+          <span class="criterio-star" onclick="setDetalhe(this,5)">★</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Comentário -->
+    <div class="avaliacao-secao">
+      <div class="secao-title">💬 Comentário (opcional)</div>
+      <textarea class="form-control" rows="3" id="comentario"
+        placeholder="Conte como foi sua experiência com Carlos. Seu comentário ajuda outros usuários!"></textarea>
+      <div style="font-size:.75rem; color:var(--text-light); margin-top:.3rem; text-align:right;" id="char-count">0/200 caracteres</div>
+    </div>
+
+    <!-- Denúncia -->
+    <div style="background:#fff3e0; border-radius:var(--radius); border:1px solid #ffcc80; padding:1rem; margin-bottom:1.5rem;">
+      <label style="display:flex; align-items:center; gap:.6rem; cursor:pointer; font-size:.85rem; color:#e65100;">
+        <input type="checkbox" style="accent-color:#e65100; width:16px; height:16px;" />
+        ⚠️ Tive um problema com esta carona (quero reportar)
+      </label>
+    </div>
+
+    <!-- Submit -->
+    <button class="btn btn-primary btn-block btn-lg" onclick="enviarAvaliacao()" id="btn-avaliar" disabled style="opacity:.5;">
+      ⭐ Enviar Avaliação
+    </button>
+    <div style="text-align:center; margin-top:.75rem;">
+      <a href="historico.html" style="font-size:.8rem; color:var(--text-light);">Avaliar depois</a>
+    </div>
+
+  </div>
+
+  <!-- Sucesso Modal -->
+  <div class="modal-overlay" id="modal-ok">
+    <div class="modal" style="text-align:center;">
+      <div style="font-size:4rem; margin-bottom:.5rem;">🌟</div>
+      <h2 style="color:var(--primary); margin-bottom:.5rem;">Avaliação Enviada!</h2>
+      <p style="color:var(--text-light); margin-bottom:.5rem;">
+        Carlos recebeu sua avaliação. Obrigado por contribuir com a comunidade!
+      </p>
+      <p style="font-size:.82rem; color:var(--text-light); margin-bottom:1.5rem;">
+        Sua nota ajuda outros usuários a escolherem bons motoristas. 🎓
+      </p>
+      <div style="display:flex; gap:.75rem; justify-content:center;">
+        <a href="dashboard.html" class="btn btn-primary">🏠 Ir ao Início</a>
+        <a href="historico.html" class="btn btn-ghost">📜 Ver Histórico</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let geralSelected = 0;
+
+    const labels = ['', 'Muito ruim 😞', 'Ruim 😕', 'Regular 😐', 'Bom 😊', 'Excelente! 🤩'];
+
+    function hoverStar(val) {
+      document.querySelectorAll('#star-geral .star').forEach((s, i) => {
+        s.classList.toggle('hovered', i < val);
+      });
+      document.getElementById('rating-label').textContent = labels[val];
+    }
+
+    function resetHover() {
+      document.querySelectorAll('#star-geral .star').forEach(s => s.classList.remove('hovered'));
+      document.getElementById('rating-label').textContent = geralSelected ? labels[geralSelected] : 'Toque nas estrelas para avaliar';
+    }
+
+    function selectStar(val) {
+      geralSelected = val;
+      document.querySelectorAll('#star-geral .star').forEach((s, i) => {
+        s.classList.toggle('selected', i < val);
+      });
+      document.getElementById('rating-label').textContent = labels[val];
+      document.getElementById('btn-avaliar').disabled = false;
+      document.getElementById('btn-avaliar').style.opacity = '1';
+    }
+
+    function setDetalhe(el, val) {
+      const group = el.closest('.criterio-stars');
+      const stars = group.querySelectorAll('.criterio-star');
+      stars.forEach((s, i) => s.classList.toggle('on', i < val));
+    }
+
+    document.getElementById('comentario').addEventListener('input', function() {
+      const len = this.value.length;
+      if(len > 200) this.value = this.value.slice(0, 200);
+      document.getElementById('char-count').textContent = `${Math.min(len, 200)}/200 caracteres`;
+    });
+
+    function enviarAvaliacao() {
+      document.getElementById('modal-ok').classList.add('open');
+    }
+
+    document.getElementById('modal-ok').addEventListener('click', function(e) {
+      if(e.target === this) this.classList.remove('open');
+    });
+  </script>
+</body>
+</html>

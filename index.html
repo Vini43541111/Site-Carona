@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CaronaUni – Login</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; background: var(--bg); }
+
+    .login-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .login-box {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 6px 32px rgba(0,0,0,.12);
+      width: 100%;
+      max-width: 420px;
+      overflow: hidden;
+    }
+
+    .login-top {
+      background: linear-gradient(135deg, #0a1e38 0%, #1a4a7a 55%, #00a651 100%);
+      padding: 2rem 2rem 1.5rem;
+      text-align: center;
+      color: #fff;
+    }
+
+    .login-logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: .5px;
+      margin-bottom: .25rem;
+    }
+    .login-logo span { font-weight: 300; }
+
+    .login-subtitle {
+      font-size: .82rem;
+      opacity: .8;
+      margin-bottom: 1.25rem;
+    }
+
+    .login-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: rgba(255,255,255,.15);
+      border-radius: 20px;
+      padding: .3rem .8rem;
+      font-size: .76rem;
+      border: 1px solid rgba(255,255,255,.25);
+    }
+
+    .login-body { padding: 1.75rem 2rem 2rem; }
+
+    .sso-btn {
+      width: 100%;
+      padding: .85rem;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+      text-decoration: none;
+      transition: background .2s, transform .15s;
+      letter-spacing: .3px;
+      margin-bottom: 1.25rem;
+    }
+    .sso-btn:hover { background: #0f2340; transform: translateY(-1px); }
+
+    .divider-or {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      color: var(--text-light);
+      font-size: .78rem;
+      margin-bottom: 1.25rem;
+    }
+    .divider-or::before, .divider-or::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .login-footer {
+      background: #f8f9fb;
+      padding: .85rem 2rem;
+      text-align: center;
+      font-size: .78rem;
+      color: var(--text-light);
+      border-top: 1px solid var(--border);
+    }
+
+    .input-icon-wrap { position: relative; }
+    .input-icon { position: absolute; left: .8rem; top: 50%; transform: translateY(-50%); font-size: .95rem; color: var(--text-light); }
+    .input-icon-wrap .form-control { padding-left: 2.4rem; }
+
+    .forgot { font-size: .8rem; color: var(--secondary); text-align: right; display: block; margin-top: .35rem; text-decoration: none; }
+    .forgot:hover { text-decoration: underline; }
+
+    .register-link { color: var(--secondary); text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-logo">🎓 <span>Carona</span>Uni</div>
+    <div style="color:rgba(255,255,255,.7); font-size:.82rem;">Unoesc · Plataforma Acadêmica</div>
+  </header>
+
+  <div class="login-wrap">
+    <div class="login-box">
+      <div class="login-top">
+        <div class="login-logo">🚗 <span>Carona</span>Uni</div>
+        <div class="login-subtitle">Plataforma de Caronas Universitárias</div>
+        <div class="login-badge">🏫 Unoesc — acesso exclusivo a estudantes</div>
+      </div>
+
+      <div class="login-body">
+
+        <div class="alert alert-info" style="margin-bottom:1.25rem;">
+          ℹ️ Use seu e-mail e senha institucional Unoesc para entrar.
+        </div>
+
+        <!-- SSO Button -->
+        <a href="dashboard.html" class="sso-btn">
+          🔒 Entrar com SSO Unoesc
+        </a>
+
+        <div class="divider-or">ou acesse manualmente</div>
+
+        <form onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label class="form-label">E-mail ou matrícula</label>
+            <div class="input-icon-wrap">
+              <span class="input-icon">📧</span>
+              <input type="text" class="form-control" placeholder="seuemail@unoesc.edu.br" value="vinicius@unoesc.edu.br" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Senha</label>
+            <div class="input-icon-wrap">
+              <span class="input-icon">🔑</span>
+              <input type="password" class="form-control" placeholder="••••••••" value="••••••••" />
+            </div>
+            <a href="#" class="forgot">Esqueci a senha</a>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:.5rem;">
+            Entrar →
+          </button>
+        </form>
+
+      </div>
+      <div class="login-footer">
+        Ainda não tem conta? <a href="#" class="register-link">Cadastrar-se</a>
+        &nbsp;·&nbsp; Precisa de ajuda?
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function handleLogin(e) {
+      e.preventDefault();
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+</body>
+</html>

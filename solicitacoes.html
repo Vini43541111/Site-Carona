@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CaronaUni – Solicitações</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .solicitation-card {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      padding: 1.1rem 1.25rem;
+      transition: border-color .2s;
+    }
+    .solicitation-card:hover { border-color: #aaa; }
+
+    .passenger-header {
+      display: flex;
+      align-items: center;
+      gap: .85rem;
+      margin-bottom: .85rem;
+    }
+    .pass-avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .action-btns {
+      display: flex;
+      gap: .65rem;
+      margin-top: .85rem;
+      padding-top: .85rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .sol-meta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: .8rem;
+      color: var(--text-light);
+      margin-top: .5rem;
+    }
+
+    .carona-section {
+      background: #f8f9fb;
+      border-radius: var(--radius-sm);
+      padding: .75rem 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .carona-section-info { font-size: .88rem; font-weight: 600; color: var(--primary); }
+    .carona-section-sub  { font-size: .78rem; color: var(--text-light); margin-top: .2rem; }
+
+    .tabs-container { margin-bottom: 1.25rem; }
+
+    .empty-pending {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-light);
+      background: #fafafa;
+      border-radius: var(--radius);
+      border: 1.5px dashed var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="dashboard.html" class="header-logo">🎓 <span>Carona</span>Uni</a>
+    <nav class="header-nav">
+      <a href="dashboard.html">🏠 Início</a>
+      <a href="buscar.html">🔍 Buscar Carona</a>
+      <a href="criar.html">➕ Oferecer</a>
+      <a href="solicitacoes.html" class="active">📋 Solicitações</a>
+      <a href="historico.html">📜 Histórico</a>
+    </nav>
+    <div class="header-user">
+      <div class="avatar">V</div>
+      <span>Olá, Vinicius ▾</span>
+    </div>
+  </header>
+
+  <div class="page">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+      <h1 style="font-size:1.3rem; color:var(--primary);">📋 Gerenciar Solicitações</h1>
+      <a href="criar.html" class="btn btn-primary btn-sm">+ Nova Carona</a>
+    </div>
+
+    <!-- My Rides Summary -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-bottom:1.5rem;">
+      <div class="stat-card" style="background:#fff;border-radius:var(--radius);padding:1rem 1.25rem;border:1.5px solid var(--border);display:flex;align-items:center;gap:1rem;">
+        <div style="font-size:1.75rem;">⏳</div>
+        <div><div style="font-size:1.5rem;font-weight:700;color:var(--primary);">3</div><div style="font-size:.78rem;color:var(--text-light);">Pendentes</div></div>
+      </div>
+      <div class="stat-card" style="background:#fff;border-radius:var(--radius);padding:1rem 1.25rem;border:1.5px solid var(--border);display:flex;align-items:center;gap:1rem;">
+        <div style="font-size:1.75rem;">✅</div>
+        <div><div style="font-size:1.5rem;font-weight:700;color:#2e7d32;">5</div><div style="font-size:.78rem;color:var(--text-light);">Aceitas hoje</div></div>
+      </div>
+      <div class="stat-card" style="background:#fff;border-radius:var(--radius);padding:1rem 1.25rem;border:1.5px solid var(--border);display:flex;align-items:center;gap:1rem;">
+        <div style="font-size:1.75rem;">🚗</div>
+        <div><div style="font-size:1.5rem;font-weight:700;color:var(--primary);">2</div><div style="font-size:.78rem;color:var(--text-light);">Caronas ativas</div></div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs tabs-container">
+      <a class="tab active" onclick="showTab('pendentes',this)">⏳ Pendentes <span class="badge badge-orange" style="margin-left:.3rem;">3</span></a>
+      <a class="tab" onclick="showTab('aceitas',this)">✅ Aceitas</a>
+      <a class="tab" onclick="showTab('recusadas',this)">❌ Recusadas</a>
+      <a class="tab" onclick="showTab('minhas',this)">🚗 Minhas Caronas</a>
+    </div>
+
+    <!-- PENDENTES -->
+    <div id="tab-pendentes">
+
+      <!-- Carona 1 -->
+      <div class="carona-section">
+        <div>
+          <div class="carona-section-info">🚗 Carona de hoje – 07:30 · Centro → Campus</div>
+          <div class="carona-section-sub">Fiat Uno Prata · 3 vagas totais · 1 passageiro confirmado</div>
+        </div>
+        <span class="badge badge-blue">1/3 ocupada</span>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:.85rem; margin-bottom:1.5rem;">
+
+        <div class="solicitation-card" id="sol-1">
+          <div class="passenger-header">
+            <div class="pass-avatar" style="background:linear-gradient(135deg,#e91e63,#9c27b0);">AS</div>
+            <div style="flex:1;">
+              <div style="font-weight:700; font-size:.95rem;">
+                Ana Souza
+                <span class="badge badge-green" style="margin-left:.4rem;">✓ Verificada</span>
+              </div>
+              <div style="display:flex; gap:2px; margin:.2rem 0;">
+                <span style="color:var(--warning);">★</span><span style="color:var(--warning);">★</span>
+                <span style="color:var(--warning);">★</span><span style="color:var(--warning);">★</span>
+                <span style="color:#ccc;">★</span>
+                <span style="font-size:.78rem; color:var(--text-light); margin-left:.3rem;">4.2 · 8 avaliações</span>
+              </div>
+              <div style="font-size:.78rem; color:var(--text-light);">Engenharia de Software · 5º semestre</div>
+            </div>
+            <div style="text-align:right; font-size:.78rem; color:var(--text-light);">
+              Solicitado<br><strong>há 12 min</strong>
+            </div>
+          </div>
+
+          <div style="background:#f8f9fb; border-radius:8px; padding:.7rem .9rem; font-size:.85rem; margin-bottom:.5rem;">
+            <div style="font-weight:600; color:var(--primary); margin-bottom:.25rem;">📍 Ponto de embarque solicitado:</div>
+            <div style="color:var(--text-light);">Av. Getúlio Vargas, 1250 – Próximo ao Banco Bradesco</div>
+          </div>
+
+          <div class="sol-meta">
+            <span>📅 Hoje, 07:30</span>
+            <span>💬 "Estarei na calçada em frente ao Bradesco."</span>
+          </div>
+
+          <div class="action-btns">
+            <button class="btn btn-primary" style="flex:1;" onclick="aceitar('sol-1', 'Ana Souza')">✅ Aceitar</button>
+            <button class="btn btn-danger" onclick="recusar('sol-1')">❌ Recusar</button>
+            <button class="btn btn-ghost btn-sm">👤 Ver perfil</button>
+          </div>
+        </div>
+
+        <div class="solicitation-card" id="sol-2">
+          <div class="passenger-header">
+            <div class="pass-avatar" style="background:linear-gradient(135deg,#ff9800,#795548);">RP</div>
+            <div style="flex:1;">
+              <div style="font-weight:700; font-size:.95rem;">Rafael Pereira</div>
+              <div style="display:flex; gap:2px; margin:.2rem 0;">
+                <span style="color:var(--warning);">★</span><span style="color:var(--warning);">★</span>
+                <span style="color:var(--warning);">★</span><span style="color:var(--warning);">★</span>
+                <span style="color:var(--warning);">★</span>
+                <span style="font-size:.78rem; color:var(--text-light); margin-left:.3rem;">4.8 · 3 avaliações</span>
+              </div>
+              <div style="font-size:.78rem; color:var(--text-light);">Administração · 3º semestre</div>
+            </div>
+            <div style="text-align:right; font-size:.78rem; color:var(--text-light);">
+              Solicitado<br><strong>há 28 min</strong>
+            </div>
+          </div>
+
+          <div style="background:#f8f9fb; border-radius:8px; padding:.7rem .9rem; font-size:.85rem; margin-bottom:.5rem;">
+            <div style="font-weight:600; color:var(--primary); margin-bottom:.25rem;">📍 Ponto de embarque solicitado:</div>
+            <div style="color:var(--text-light);">Terminal Central de Ônibus – Saída Norte</div>
+          </div>
+
+          <div class="sol-meta">
+            <span>📅 Hoje, 07:30</span>
+            <span>💬 "Sem mensagem.</span>
+          </div>
+
+          <div class="action-btns">
+            <button class="btn btn-primary" style="flex:1;" onclick="aceitar('sol-2', 'Rafael Pereira')">✅ Aceitar</button>
+            <button class="btn btn-danger" onclick="recusar('sol-2')">❌ Recusar</button>
+            <button class="btn btn-ghost btn-sm">👤 Ver perfil</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Carona 2 -->
+      <div class="carona-section">
+        <div>
+          <div class="carona-section-info">🚗 Carona de amanhã – 07:30 · Efapi → Campus</div>
+          <div class="carona-section-sub">Gol Preto · 2 vagas totais · 0 passageiros</div>
+        </div>
+        <span class="badge badge-gray">0/2 ocupada</span>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:.85rem;">
+        <div class="solicitation-card" id="sol-3">
+          <div class="passenger-header">
+            <div class="pass-avatar" style="background:linear-gradient(135deg,#009688,#4caf50);">LF</div>
+            <div style="flex:1;">
+              <div style="font-weight:700; font-size:.95rem;">
+                Lucas Ferreira
+                <span class="badge badge-green" style="margin-left:.4rem;">✓ Verificado</span>
+              </div>
+              <div style="display:flex; gap:2px; margin:.2rem 0;">
+                <span style="color:var(--warning);">★</span><span style="color:var(--warning);">★</span>
+                <span style="color:var(--warning);">★</span><span style="color:var(--warning);">★</span>
+                <span style="color:var(--warning);">★</span>
+                <span style="font-size:.78rem; color:var(--text-light); margin-left:.3rem;">5.0 · 12 avaliações</span>
+              </div>
+              <div style="font-size:.78rem; color:var(--text-light);">Medicina · 2º semestre</div>
+            </div>
+            <div style="text-align:right; font-size:.78rem; color:var(--text-light);">
+              Solicitado<br><strong>há 1h</strong>
+            </div>
+          </div>
+          <div style="background:#f8f9fb; border-radius:8px; padding:.7rem .9rem; font-size:.85rem; margin-bottom:.5rem;">
+            <div style="font-weight:600; color:var(--primary); margin-bottom:.25rem;">📍 Ponto de embarque solicitado:</div>
+            <div style="color:var(--text-light);">Bairro Efapi – Rua das Flores, 321</div>
+          </div>
+          <div class="sol-meta">
+            <span>📅 Amanhã, 07:30</span>
+            <span>💬 "Posso ficar no ponto de ônibus da esquina se preferir!"</span>
+          </div>
+          <div class="action-btns">
+            <button class="btn btn-primary" style="flex:1;" onclick="aceitar('sol-3', 'Lucas Ferreira')">✅ Aceitar</button>
+            <button class="btn btn-danger" onclick="recusar('sol-3')">❌ Recusar</button>
+            <button class="btn btn-ghost btn-sm">👤 Ver perfil</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ACEITAS -->
+    <div id="tab-aceitas" style="display:none;">
+      <div class="alert alert-success">✅ Você aceitou 5 solicitações hoje. Ótimo dia!</div>
+      <div style="display:flex; flex-direction:column; gap:.85rem;">
+        <div class="solicitation-card" style="opacity:.85;">
+          <div class="passenger-header">
+            <div class="pass-avatar" style="background:linear-gradient(135deg,#3f51b5,#2196f3);">JS</div>
+            <div style="flex:1;">
+              <div style="font-weight:700;">João Silva</div>
+              <div style="font-size:.78rem; color:var(--text-light);">Aceito às 06:45 · Carona de hoje 07:30</div>
+            </div>
+            <span class="badge badge-green">✅ Aceito</span>
+          </div>
+          <div class="sol-meta">
+            <span>📍 Centro → Campus</span>
+            <span>⭐ Avaliação pendente após carona</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECUSADAS -->
+    <div id="tab-recusadas" style="display:none;">
+      <div class="empty-pending">
+        <div style="font-size:2.5rem; margin-bottom:.5rem;">🙌</div>
+        <div style="font-weight:600; margin-bottom:.25rem;">Nenhuma recusa recente</div>
+        <div style="font-size:.82rem;">Ótimo! Você não recusou nenhuma solicitação recentemente.</div>
+      </div>
+    </div>
+
+    <!-- MINHAS CARONAS -->
+    <div id="tab-minhas" style="display:none;">
+      <div style="display:flex; flex-direction:column; gap:.85rem;">
+        <div class="solicitation-card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:.7rem;">
+            <div>
+              <div style="font-weight:700; color:var(--primary);">Centro → Campus Unoesc</div>
+              <div style="font-size:.78rem; color:var(--text-light); margin-top:.2rem;">📅 Hoje · ⏰ 07:30 · 🚗 Fiat Uno Prata</div>
+            </div>
+            <span class="badge badge-green">Ativa</span>
+          </div>
+          <div style="font-size:.85rem; color:var(--text-light);">👥 1/3 passageiros · ⏳ 2 pendentes</div>
+          <div class="action-btns">
+            <a href="solicitacoes.html" class="btn btn-outline btn-sm">Ver solicitações</a>
+            <button class="btn btn-ghost btn-sm" onclick="cancelarCarona()">🚫 Cancelar carona</button>
+          </div>
+        </div>
+
+        <div class="solicitation-card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:.7rem;">
+            <div>
+              <div style="font-weight:700; color:var(--primary);">Efapi → Campus Unoesc</div>
+              <div style="font-size:.78rem; color:var(--text-light); margin-top:.2rem;">📅 Amanhã · ⏰ 07:30 · 🚗 Gol Preto</div>
+            </div>
+            <span class="badge badge-blue">Agendada</span>
+          </div>
+          <div style="font-size:.85rem; color:var(--text-light);">👥 0/2 passageiros · ⏳ 1 pendente</div>
+          <div class="action-btns">
+            <a href="solicitacoes.html" class="btn btn-outline btn-sm">Ver solicitações</a>
+            <button class="btn btn-ghost btn-sm">✏️ Editar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal aceitar -->
+  <div class="modal-overlay" id="modal-aceitar">
+    <div class="modal" style="text-align:center;">
+      <div style="font-size:3rem; margin-bottom:.5rem;">✅</div>
+      <h2 style="color:var(--primary); margin-bottom:.5rem;" id="modal-nome">Solicitação Aceita!</h2>
+      <p style="color:var(--text-light); margin-bottom:1.5rem;" id="modal-msg">O passageiro foi notificado e confirmou sua presença.</p>
+      <button class="btn btn-primary" onclick="fecharModal()">Fechar</button>
+    </div>
+  </div>
+
+  <script>
+    function showTab(name, el) {
+      document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+      document.getElementById('tab-' + name).style.display = 'block';
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function aceitar(id, nome) {
+      const card = document.getElementById(id);
+      card.style.opacity = '0.5';
+      card.style.pointerEvents = 'none';
+      setTimeout(() => {
+        card.innerHTML = `
+          <div style="display:flex;align-items:center;gap:.75rem;padding:.5rem 0;">
+            <div style="font-size:1.5rem;">✅</div>
+            <div>
+              <div style="font-weight:600;color:#2e7d32;">Solicitação aceita – ${nome}</div>
+              <div style="font-size:.78rem;color:var(--text-light);">Passageiro notificado agora.</div>
+            </div>
+            <span class="badge badge-green" style="margin-left:auto;">Aceito</span>
+          </div>`;
+        card.style.opacity = '1';
+        card.style.borderColor = '#a5d6a7';
+        card.style.background = '#f1f8e9';
+      }, 500);
+
+      document.getElementById('modal-nome').textContent = `${nome} foi aceito(a)!`;
+      document.getElementById('modal-msg').textContent = `${nome} foi notificado(a) e confirmou presença na carona.`;
+      document.getElementById('modal-aceitar').classList.add('open');
+    }
+
+    function recusar(id) {
+      if(!confirm('Deseja recusar esta solicitação?')) return;
+      const card = document.getElementById(id);
+      card.style.opacity = '0';
+      card.style.transition = 'opacity .4s';
+      setTimeout(() => { card.remove(); }, 400);
+    }
+
+    function cancelarCarona() {
+      if(confirm('Tem certeza que deseja cancelar esta carona? Os passageiros serão notificados.')) {
+        alert('Carona cancelada. Passageiros notificados.');
+      }
+    }
+
+    function fecharModal() {
+      document.getElementById('modal-aceitar').classList.remove('open');
+    }
+
+    document.getElementById('modal-aceitar').addEventListener('click', function(e) {
+      if(e.target === this) fecharModal();
+    });
+  </script>
+</body>
+</html>

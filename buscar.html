@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CaronaUni – Buscar Carona</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    .search-layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+    .results-list { display: flex; flex-direction: column; gap: .85rem; }
+
+    .map-wrap {
+      position: sticky;
+      top: 74px;
+    }
+    #map { height: 520px; border-radius: var(--radius); border: 1.5px solid var(--border); }
+
+    .filter-bar {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+    .filter-chip {
+      padding: .3rem .75rem;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      font-size: .8rem;
+      cursor: pointer;
+      background: #fff;
+      transition: all .15s;
+    }
+    .filter-chip:hover, .filter-chip.active {
+      background: var(--accent);
+      border-color: var(--secondary);
+      color: var(--secondary-dk);
+      font-weight: 600;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .results-count { font-size: .85rem; color: var(--text-light); }
+
+    @media (max-width: 900px) {
+      .search-layout { grid-template-columns: 1fr; }
+      .map-wrap { position: static; }
+      #map { height: 280px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="dashboard.html" class="header-logo">🎓 <span>Carona</span>Uni</a>
+    <nav class="header-nav">
+      <a href="dashboard.html">🏠 Início</a>
+      <a href="buscar.html" class="active">🔍 Buscar Carona</a>
+      <a href="criar.html">➕ Oferecer</a>
+      <a href="solicitacoes.html">📋 Solicitações</a>
+      <a href="historico.html">📜 Histórico</a>
+    </nav>
+    <div class="header-user">
+      <div class="avatar">V</div>
+      <span>Olá, Vinicius ▾</span>
+    </div>
+  </header>
+
+  <div class="page">
+
+    <!-- Search Form -->
+    <div class="card" style="margin-bottom:1.25rem;">
+      <div class="card-title">🔍 Buscar Carona Disponível</div>
+      <div class="form-row form-row-3" style="align-items:flex-end; gap:1rem;">
+        <div class="form-group" style="margin-bottom:0; position:relative;">
+          <label class="form-label">📍 Origem</label>
+          <input type="text" id="input-origem" class="form-control" placeholder="Ponto de embarque..." value="Centro, Chapecó" />
+          <button onclick="usarLocalizacao()" style="position:absolute;right:.5rem;top:2.1rem;background:none;border:none;cursor:pointer;font-size:1rem;" title="Usar minha localização">📌</button>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">🏁 Destino</label>
+          <input type="text" id="input-destino" class="form-control" placeholder="Para onde vai..." value="Campus Unoesc" />
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">📅 Data e Hora</label>
+          <input type="datetime-local" id="input-data" class="form-control" />
+        </div>
+      </div>
+      <div style="display:flex; gap:.75rem; margin-top:1rem; align-items:center;">
+        <button class="btn btn-primary" onclick="buscarCaronas()">🔍 Buscar Caronas</button>
+        <button class="btn btn-ghost" onclick="limparBusca()">✕ Limpar</button>
+        <span id="buscando" style="font-size:.82rem;color:var(--text-light);display:none;">Buscando...</span>
+      </div>
+    </div>
+
+    <div class="search-layout">
+
+      <!-- Left: List -->
+      <div>
+        <!-- Filters -->
+        <div class="filter-bar">
+          <span style="font-size:.8rem; font-weight:600; color:var(--text-light);">Filtrar:</span>
+          <span class="filter-chip active" onclick="toggleFilter(this)">Todos</span>
+          <span class="filter-chip" onclick="toggleFilter(this)">⭐ 4.5+</span>
+          <span class="filter-chip" onclick="toggleFilter(this)">Hoje</span>
+          <span class="filter-chip" onclick="toggleFilter(this)">Vagas</span>
+        </div>
+
+        <div class="results-header">
+          <div class="results-count" id="results-count">4 caronas encontradas</div>
+          <select class="form-control" style="width:auto;font-size:.8rem;padding:.35rem .7rem;">
+            <option>Ordenar: Mais Próximo</option>
+            <option>Ordenar: Horário</option>
+            <option>Ordenar: Avaliação</option>
+          </select>
+        </div>
+
+        <div class="results-list">
+
+          <a href="detalhes.html" class="ride-card" id="card-1" data-lat="-27.087" data-lng="-52.618">
+            <div class="ride-card-header">
+              <div class="driver-info">
+                <div class="driver-avatar">CM</div>
+                <div>
+                  <div class="driver-name">Carlos Medeiros <span style="font-size:.75rem;background:#e8f5e9;color:#2e7d32;padding:.1rem .4rem;border-radius:10px;margin-left:.3rem;">✓ Verificado</span></div>
+                  <div class="driver-rating">
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    4.9 · 23 avaliações
+                  </div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:1.1rem;font-weight:700;color:var(--primary);">07:30</div>
+                <div style="font-size:.72rem;color:var(--text-light);">Hoje</div>
+              </div>
+            </div>
+            <div class="ride-route">
+              <div class="route-point"><div class="route-dot origin"></div> Centro – Av. Getúlio Vargas</div>
+              <div class="route-line" style="margin-left:4px;"></div>
+              <div class="route-point"><div class="route-dot dest"></div> Campus Unoesc – Portaria Principal</div>
+            </div>
+            <div class="ride-meta">
+              <span class="ride-meta-item">🚗 Fiat Uno Prata</span>
+              <span class="ride-meta-item">👥 2 vagas</span>
+              <span class="ride-meta-item">⏱ ~18 min</span>
+              <span class="ride-meta-item badge badge-green" style="margin-left:auto;">Disponível</span>
+            </div>
+          </a>
+
+          <a href="detalhes.html" class="ride-card" id="card-2" data-lat="-27.095" data-lng="-52.608">
+            <div class="ride-card-header">
+              <div class="driver-info">
+                <div class="driver-avatar" style="background:linear-gradient(135deg,#e91e63,#9c27b0);">AS</div>
+                <div>
+                  <div class="driver-name">Ana Souza</div>
+                  <div class="driver-rating">
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star">★</span>
+                    4.2 · 8 avaliações
+                  </div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:1.1rem;font-weight:700;color:var(--primary);">07:45</div>
+                <div style="font-size:.72rem;color:var(--text-light);">Hoje</div>
+              </div>
+            </div>
+            <div class="ride-route">
+              <div class="route-point"><div class="route-dot origin"></div> Bairro Efapi – Rua Principal</div>
+              <div class="route-line" style="margin-left:4px;"></div>
+              <div class="route-point"><div class="route-dot dest"></div> Campus Unoesc – Portaria Principal</div>
+            </div>
+            <div class="ride-meta">
+              <span class="ride-meta-item">🚗 HB20 Branco</span>
+              <span class="ride-meta-item">👥 1 vaga</span>
+              <span class="ride-meta-item">⏱ ~22 min</span>
+              <span class="ride-meta-item badge badge-orange" style="margin-left:auto;">Última vaga</span>
+            </div>
+          </a>
+
+          <a href="detalhes.html" class="ride-card" id="card-3" data-lat="-27.105" data-lng="-52.625">
+            <div class="ride-card-header">
+              <div class="driver-info">
+                <div class="driver-avatar" style="background:linear-gradient(135deg,#ff9800,#f44336);">JO</div>
+                <div>
+                  <div class="driver-name">João Oliveira <span style="font-size:.75rem;background:#e8f5e9;color:#2e7d32;padding:.1rem .4rem;border-radius:10px;margin-left:.3rem;">✓ Verificado</span></div>
+                  <div class="driver-rating">
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    5.0 · 41 avaliações
+                  </div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:1.1rem;font-weight:700;color:var(--primary);">08:00</div>
+                <div style="font-size:.72rem;color:var(--text-light);">Hoje</div>
+              </div>
+            </div>
+            <div class="ride-route">
+              <div class="route-point"><div class="route-dot origin"></div> Terminal Urbano – Chapecó Centro</div>
+              <div class="route-line" style="margin-left:4px;"></div>
+              <div class="route-point"><div class="route-dot dest"></div> Campus Unoesc – Bloco A</div>
+            </div>
+            <div class="ride-meta">
+              <span class="ride-meta-item">🚗 Gol Preto</span>
+              <span class="ride-meta-item">👥 3 vagas</span>
+              <span class="ride-meta-item">⏱ ~25 min</span>
+              <span class="ride-meta-item badge badge-green" style="margin-left:auto;">Disponível</span>
+            </div>
+          </a>
+
+          <a href="detalhes.html" class="ride-card" id="card-4" data-lat="-27.075" data-lng="-52.633">
+            <div class="ride-card-header">
+              <div class="driver-info">
+                <div class="driver-avatar" style="background:linear-gradient(135deg,#009688,#4caf50);">ML</div>
+                <div>
+                  <div class="driver-name">Maria Lima</div>
+                  <div class="driver-rating">
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star">★</span>
+                    4.6 · 15 avaliações
+                  </div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:1.1rem;font-weight:700;color:var(--primary);">08:15</div>
+                <div style="font-size:.72rem;color:var(--text-light);">Hoje</div>
+              </div>
+            </div>
+            <div class="ride-route">
+              <div class="route-point"><div class="route-dot origin"></div> Bairro Passo dos Fortes</div>
+              <div class="route-line" style="margin-left:4px;"></div>
+              <div class="route-point"><div class="route-dot dest"></div> Campus Unoesc – Bloco Administrativo</div>
+            </div>
+            <div class="ride-meta">
+              <span class="ride-meta-item">🚗 Ônix Vermelho</span>
+              <span class="ride-meta-item">👥 2 vagas</span>
+              <span class="ride-meta-item">⏱ ~30 min</span>
+              <span class="ride-meta-item badge badge-green" style="margin-left:auto;">Disponível</span>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- Right: Map -->
+      <div class="map-wrap">
+        <div class="card" style="padding:.75rem; margin-bottom:.75rem;">
+          <div style="font-size:.82rem; color:var(--text-light); display:flex; align-items:center; gap:.5rem;">
+            <span>🗺</span>
+            <span>Clique em um resultado para destacar no mapa. Clique no mapa para definir origem.</span>
+          </div>
+        </div>
+        <div id="map"></div>
+        <div class="card" style="padding:.75rem; margin-top:.75rem;">
+          <div style="display:flex; gap:1rem; font-size:.78rem; color:var(--text-light);">
+            <span>🟢 Origem</span>
+            <span>🔵 Destino</span>
+            <span>🚗 Motoristas</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Chapecó - SC (Unoesc)
+    const MAP_CENTER = [-27.0954, -52.6150];
+    const CAMPUS = [-27.0954, -52.6150];
+
+    const map = L.map('map').setView(MAP_CENTER, 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap',
+      maxZoom: 19
+    }).addTo(map);
+
+    // Custom icons
+    const greenIcon = L.divIcon({
+      className: '',
+      html: '<div style="background:#00a651;width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>',
+      iconSize: [30, 30], iconAnchor: [15, 30]
+    });
+    const blueIcon = L.divIcon({
+      className: '',
+      html: '<div style="background:#1a4a7a;width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>',
+      iconSize: [30, 30], iconAnchor: [15, 30]
+    });
+    const carIcon = L.divIcon({
+      className: '',
+      html: '<div style="background:#fff;width:32px;height:32px;border-radius:50%;border:3px solid #00a651;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.2);">🚗</div>',
+      iconSize: [32, 32], iconAnchor: [16, 16]
+    });
+
+    // Campus marker (destination)
+    L.marker(CAMPUS, { icon: blueIcon })
+      .addTo(map)
+      .bindPopup('<b>Campus Unoesc</b><br>Destino principal');
+
+    // Ride markers
+    const rides = [
+      { lat: -27.087, lng: -52.618, label: 'Carlos Medeiros', time: '07:30', slots: 2 },
+      { lat: -27.073, lng: -52.605, label: 'Ana Souza', time: '07:45', slots: 1 },
+      { lat: -27.080, lng: -52.635, label: 'João Oliveira', time: '08:00', slots: 3 },
+      { lat: -27.100, lng: -52.625, label: 'Maria Lima', time: '08:15', slots: 2 },
+    ];
+
+    const markers = rides.map(r => {
+      const m = L.marker([r.lat, r.lng], { icon: carIcon })
+        .addTo(map)
+        .bindPopup(`<b>${r.label}</b><br>🕐 ${r.time} · 👥 ${r.slots} vagas<br><a href="detalhes.html" style="color:#00a651;">Ver detalhes →</a>`);
+      return m;
+    });
+
+    // Draw route line example
+    const routeCoords = [
+      [-27.087, -52.618],
+      [-27.090, -52.614],
+      [-27.093, -52.612],
+      CAMPUS
+    ];
+    L.polyline(routeCoords, { color: '#00a651', weight: 3, opacity: .6, dashArray: '6,6' }).addTo(map);
+
+    // Origem marker (draggable)
+    let origemMarker = L.marker([-27.087, -52.618], { icon: greenIcon, draggable: true })
+      .addTo(map)
+      .bindPopup('📍 Seu ponto de embarque<br><small>Arraste para ajustar</small>');
+
+    origemMarker.on('dragend', function(e) {
+      const pos = e.target.getLatLng();
+      reverseGeocode(pos.lat, pos.lng);
+    });
+
+    map.on('click', function(e) {
+      origemMarker.setLatLng(e.latlng);
+      reverseGeocode(e.latlng.lat, e.latlng.lng);
+    });
+
+    async function reverseGeocode(lat, lng) {
+      try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+        const d = await r.json();
+        const addr = d.display_name.split(',').slice(0,2).join(',');
+        document.getElementById('input-origem').value = addr;
+      } catch(e) {}
+    }
+
+    // Highlight card on marker hover
+    markers.forEach((m, i) => {
+      m.on('mouseover', () => {
+        const card = document.getElementById('card-' + (i+1));
+        if(card) card.style.borderColor = '#00a651';
+      });
+      m.on('mouseout', () => {
+        const card = document.getElementById('card-' + (i+1));
+        if(card) card.style.borderColor = '';
+      });
+    });
+
+    function usarLocalizacao() {
+      if(navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          const { latitude: lat, longitude: lng } = pos.coords;
+          origemMarker.setLatLng([lat, lng]);
+          map.setView([lat, lng], 14);
+          reverseGeocode(lat, lng);
+        }, () => alert('Não foi possível obter sua localização.'));
+      }
+    }
+
+    function buscarCaronas() {
+      const el = document.getElementById('buscando');
+      el.style.display = 'inline';
+      setTimeout(() => { el.style.display = 'none'; }, 1000);
+    }
+
+    function limparBusca() {
+      document.getElementById('input-origem').value = '';
+      document.getElementById('input-destino').value = '';
+    }
+
+    function toggleFilter(el) {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    // Set default date to today
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('input-data').value = now.toISOString().slice(0,16);
+  </script>
+</body>
+</html>
