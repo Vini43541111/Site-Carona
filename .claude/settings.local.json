@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"import weasyprint; print\\('weasyprint ok'\\)\")",
+      "Bash(google-chrome --headless --disable-gpu --print-to-pdf=\"/home/vinicius-ti/Site-Carona/documentacao.pdf\" --print-to-pdf-no-header --no-margins \"file:///home/vinicius-ti/Site-Carona/documentacao.html\")",
+      "Bash(echo \"exit: $?\")",
+      "Bash(google-chrome --headless --disable-gpu --print-to-pdf=/home/vinicius-ti/Site-Carona/documentacao.pdf --print-to-pdf-no-header --virtual-time-budget=3000 file:///home/vinicius-ti/Site-Carona/documentacao.html)"
+    ]
+  }
+}
