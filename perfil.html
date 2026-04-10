@@ -136,14 +136,14 @@
           <div class="card-title">⭐ Minha Reputação</div>
 
           <div class="rating-big">
-            <div style="text-align:center;">
+            <div class="text-center">
               <div class="rating-number">4.8</div>
               <div style="display:flex;gap:2px;justify-content:center;color:var(--warning);font-size:1.1rem;">
                 ★★★★★
               </div>
               <div style="font-size:.72rem;color:var(--text-light);margin-top:.2rem;">como motorista</div>
             </div>
-            <div style="text-align:center;">
+            <div class="text-center">
               <div class="rating-number">4.9</div>
               <div style="display:flex;gap:2px;justify-content:center;color:var(--warning);font-size:1.1rem;">
                 ★★★★★
@@ -179,33 +179,33 @@
 
         <!-- Info -->
         <div class="card">
-          <div class="card-title" style="justify-content:space-between;">
+          <div class="card-title flex-between">
             👤 Dados Pessoais
             <button class="btn btn-ghost btn-sm">✎ Editar</button>
           </div>
           <div style="display:flex;flex-direction:column;gap:.6rem;font-size:.88rem;">
-            <div style="display:flex;justify-content:space-between;">
-              <span style="color:var(--text-light);">Nome completo</span>
-              <span style="font-weight:600;">Vinicius Silva</span>
+            <div class="info-row">
+              <span class="info-label">Nome completo</span>
+              <span class="fw-600">Vinicius Silva</span>
             </div>
-            <div style="display:flex;justify-content:space-between;">
-              <span style="color:var(--text-light);">E-mail</span>
-              <span style="font-weight:600;">vinicius@unoesc.edu.br</span>
+            <div class="info-row">
+              <span class="info-label">E-mail</span>
+              <span class="fw-600">vinicius@unoesc.edu.br</span>
             </div>
-            <div style="display:flex;justify-content:space-between;">
-              <span style="color:var(--text-light);">Curso</span>
-              <span style="font-weight:600;">Engenharia de Software</span>
+            <div class="info-row">
+              <span class="info-label">Curso</span>
+              <span class="fw-600">Engenharia de Software</span>
             </div>
-            <div style="display:flex;justify-content:space-between;">
-              <span style="color:var(--text-light);">Semestre</span>
-              <span style="font-weight:600;">5º semestre</span>
+            <div class="info-row">
+              <span class="info-label">Semestre</span>
+              <span class="fw-600">5º semestre</span>
             </div>
-            <div style="display:flex;justify-content:space-between;">
-              <span style="color:var(--text-light);">Campus</span>
-              <span style="font-weight:600;">Chapecó</span>
+            <div class="info-row">
+              <span class="info-label">Campus</span>
+              <span class="fw-600">Chapecó</span>
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span style="color:var(--text-light);">Matrícula verificada</span>
+            <div class="info-row">
+              <span class="info-label">Matrícula verificada</span>
               <span class="badge badge-green">✓ Verificado</span>
             </div>
           </div>
@@ -216,7 +216,7 @@
       <div>
         <!-- Vehicles -->
         <div class="card" style="margin-bottom:1.25rem;">
-          <div class="card-title" style="justify-content:space-between;">
+          <div class="card-title flex-between">
             🚗 Meus Veículos
             <button class="btn btn-ghost btn-sm" onclick="alert('Adicionar veículo – em breve!')">+ Adicionar</button>
           </div>
@@ -225,7 +225,7 @@
             <div class="vehicle-icon">🚗</div>
             <div style="flex:1;">
               <div style="font-weight:600; font-size:.9rem;">Gol 2018</div>
-              <div style="font-size:.78rem; color:var(--text-light);">Preto · ABC-1234</div>
+              <div class="text-muted text-xs">Preto · ABC-1234</div>
             </div>
             <span class="badge badge-green">Principal</span>
           </div>
@@ -234,7 +234,7 @@
             <div class="vehicle-icon">🚙</div>
             <div style="flex:1;">
               <div style="font-weight:600; font-size:.9rem;">Fiat Uno 2019</div>
-              <div style="font-size:.78rem; color:var(--text-light);">Prata · XYZ-9876</div>
+              <div class="text-muted text-xs">Prata · XYZ-9876</div>
             </div>
             <button class="btn btn-ghost btn-sm">✎</button>
           </div>
@@ -242,7 +242,7 @@
 
         <!-- Preferences -->
         <div class="card" style="margin-bottom:1.25rem;">
-          <div class="card-title" style="justify-content:space-between;">
+          <div class="card-title flex-between">
             ⚙️ Preferências de Carona
             <button class="btn btn-ghost btn-sm">✎ Editar</button>
           </div>

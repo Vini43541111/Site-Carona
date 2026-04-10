@@ -133,7 +133,7 @@
       <div class="sticky-panel">
 
         <!-- Driver Profile -->
-        <div class="card" style="margin-bottom:1rem;">
+        <div class="card" class="mb-1">
           <div class="driver-profile">
             <div class="driver-avatar-lg">
               CM
@@ -155,7 +155,7 @@
           </div>
 
           <!-- Route -->
-          <div style="margin-bottom:1rem;">
+          <div class="mb-1">
             <div class="route-point" style="display:flex;align-items:center;gap:.6rem;padding:.3rem 0;font-size:.9rem;">
               <div class="route-dot origin" style="width:12px;height:12px;border-radius:50%;background:#00a651;flex-shrink:0;"></div>
               <div>
@@ -201,7 +201,7 @@
         </div>
 
         <!-- Passengers -->
-        <div class="card" style="margin-bottom:1rem;">
+        <div class="card" class="mb-1">
           <div class="card-title">👥 Passageiros Confirmados (1/3)</div>
           <div class="passengers-list">
             <div class="passenger-chip">
@@ -218,7 +218,7 @@
         </div>
 
         <!-- Preferences -->
-        <div class="card" style="margin-bottom:1rem;">
+        <div class="card" class="mb-1">
           <div class="card-title">💬 Observações do Motorista</div>
           <p style="font-size:.85rem; color:var(--text-light); line-height:1.5;">
             "Saio pontualmente às 07:30. Carro com ar-condicionado. Não aceito pets.
@@ -244,7 +244,7 @@
             🙋 Solicitar Vaga
           </button>
           <div style="text-align:center; margin-top:.6rem;">
-            <a href="#" style="font-size:.78rem; color:var(--text-light);">💬 Enviar mensagem ao motorista</a>
+            <a href="#" class="text-muted text-xs">💬 Enviar mensagem ao motorista</a>
           </div>
         </div>
 
@@ -253,7 +253,7 @@
       <!-- Right: Map + Reviews -->
       <div>
         <div class="card" style="padding:.7rem; margin-bottom:.75rem;">
-          <div style="font-size:.82rem; color:var(--text-light);">🗺 Trajeto aproximado da carona</div>
+          <div class="text-muted">🗺 Trajeto aproximado da carona</div>
         </div>
         <div id="map"></div>
 
@@ -261,7 +261,7 @@
         <div class="card" style="margin-top:1.25rem;">
           <div class="card-title">⭐ Avaliações de Carlos (23 avaliações)</div>
           <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:1.25rem; padding-bottom:1rem; border-bottom:1px solid var(--border);">
-            <div style="text-align:center;">
+            <div class="text-center">
               <div style="font-size:3rem; font-weight:700; color:var(--primary); line-height:1;">4.9</div>
               <div class="stars-display" style="justify-content:center;">
                 <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
@@ -353,7 +353,7 @@
 
   <!-- Modal Sucesso -->
   <div class="modal-overlay" id="modal-sucesso">
-    <div class="modal" style="text-align:center;">
+    <div class="modal" class="text-center">
       <div style="font-size:3.5rem; margin-bottom:.75rem;">📨</div>
       <h2 style="color:var(--primary); margin-bottom:.5rem;">Solicitação Enviada!</h2>
       <p style="color:var(--text-light); margin-bottom:1.5rem;">
@@ -368,57 +368,30 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/app.js"></script>
   <script>
-    const MAP_CENTER = [-27.0954, -52.6150];
     const map = L.map('map').setView(MAP_CENTER, 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap', maxZoom: 19
+      attribution: '© OpenStreetMap', maxZoom: 19,
     }).addTo(map);
 
-    const greenIcon = L.divIcon({
-      className:'',
-      html:'<div style="background:#00a651;width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>',
-      iconSize:[28,28], iconAnchor:[14,28]
-    });
-    const blueIcon = L.divIcon({
-      className:'',
-      html:'<div style="background:#1a4a7a;width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>',
-      iconSize:[28,28], iconAnchor:[14,28]
-    });
+    const greenIcon = createPinIcon('#00a651');
+    const blueIcon  = createPinIcon('#1a4a7a');
+    const origem    = [-27.087, -52.618];
 
-    const origem = [-27.087, -52.618];
-    L.marker(origem, { icon: greenIcon }).addTo(map)
-      .bindPopup('📍 <b>Origem:</b> Centro – Av. Getúlio Vargas');
+    L.marker(origem,     { icon: greenIcon }).addTo(map).bindPopup('📍 <b>Origem:</b> Centro – Av. Getúlio Vargas');
+    L.marker(MAP_CENTER, { icon: blueIcon  }).addTo(map).bindPopup('🏫 <b>Destino:</b> Campus Unoesc');
 
-    L.marker(MAP_CENTER, { icon: blueIcon }).addTo(map)
-      .bindPopup('🏫 <b>Destino:</b> Campus Unoesc');
-
-    // Route
-    const routePoints = [
-      [-27.087, -52.618],
-      [-27.090, -52.616],
-      [-27.093, -52.614],
-      [-27.096, -52.615],
-      MAP_CENTER
-    ];
-    L.polyline(routePoints, { color: '#00a651', weight: 5, opacity: .7 }).addTo(map);
+    L.polyline([[-27.087,-52.618],[-27.090,-52.616],[-27.093,-52.614],[-27.096,-52.615], MAP_CENTER],
+      { color: '#00a651', weight: 5, opacity: .7 }).addTo(map);
     map.fitBounds([origem, MAP_CENTER], { padding: [40, 40] });
 
-    function abrirModal() {
-      document.getElementById('modal-solicitar').classList.add('open');
-    }
-    function fecharModal() {
-      document.getElementById('modal-solicitar').classList.remove('open');
-    }
+    function abrirModal()        { openModal('modal-solicitar'); }
+    function fecharModal()       { closeModal('modal-solicitar'); }
     function confirmarSolicitacao() {
-      document.getElementById('modal-solicitar').classList.remove('open');
-      setTimeout(() => {
-        document.getElementById('modal-sucesso').classList.add('open');
-      }, 200);
+      closeModal('modal-solicitar');
+      setTimeout(() => openModal('modal-sucesso'), 200);
     }
-    document.querySelectorAll('.modal-overlay').forEach(m => {
-      m.addEventListener('click', e => { if(e.target === m) m.classList.remove('open'); });
-    });
   </script>
 </body>
 </html>

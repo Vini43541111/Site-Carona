@@ -5,7 +5,8 @@
       "Bash(google-chrome --headless --disable-gpu --print-to-pdf=\"/home/vinicius-ti/Site-Carona/documentacao.pdf\" --print-to-pdf-no-header --no-margins \"file:///home/vinicius-ti/Site-Carona/documentacao.html\")",
       "Bash(echo \"exit: $?\")",
       "Bash(google-chrome --headless --disable-gpu --print-to-pdf=/home/vinicius-ti/Site-Carona/documentacao.pdf --print-to-pdf-no-header --virtual-time-budget=3000 file:///home/vinicius-ti/Site-Carona/documentacao.html)",
-      "Bash(google-chrome --headless --disable-gpu --print-to-pdf=\"/home/vinicius-ti/Site-Carona/documentacao.pdf\" --no-pdf-header-footer --print-to-pdf-no-header \"file:///home/vinicius-ti/Site-Carona/documentacao.html\")"
+      "Bash(google-chrome --headless --disable-gpu --print-to-pdf=\"/home/vinicius-ti/Site-Carona/documentacao.pdf\" --no-pdf-header-footer --print-to-pdf-no-header \"file:///home/vinicius-ti/Site-Carona/documentacao.html\")",
+      "Bash(google-chrome --headless --disable-gpu --print-to-pdf=/home/vinicius-ti/Site-Carona/documentacao-tecnica.pdf --no-pdf-header-footer --print-to-pdf-no-header --paper-width=8.27 --paper-height=11.69 file:///home/vinicius-ti/Site-Carona/documentacao-print.html)"
     ]
   }
 }

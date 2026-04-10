@@ -146,7 +146,7 @@
                 <span style="color:#ccc;">★</span>
                 <span style="font-size:.78rem; color:var(--text-light); margin-left:.3rem;">4.2 · 8 avaliações</span>
               </div>
-              <div style="font-size:.78rem; color:var(--text-light);">Engenharia de Software · 5º semestre</div>
+              <div class="text-muted text-xs">Engenharia de Software · 5º semestre</div>
             </div>
             <div style="text-align:right; font-size:.78rem; color:var(--text-light);">
               Solicitado<br><strong>há 12 min</strong>
@@ -181,7 +181,7 @@
                 <span style="color:var(--warning);">★</span>
                 <span style="font-size:.78rem; color:var(--text-light); margin-left:.3rem;">4.8 · 3 avaliações</span>
               </div>
-              <div style="font-size:.78rem; color:var(--text-light);">Administração · 3º semestre</div>
+              <div class="text-muted text-xs">Administração · 3º semestre</div>
             </div>
             <div style="text-align:right; font-size:.78rem; color:var(--text-light);">
               Solicitado<br><strong>há 28 min</strong>
@@ -231,7 +231,7 @@
                 <span style="color:var(--warning);">★</span>
                 <span style="font-size:.78rem; color:var(--text-light); margin-left:.3rem;">5.0 · 12 avaliações</span>
               </div>
-              <div style="font-size:.78rem; color:var(--text-light);">Medicina · 2º semestre</div>
+              <div class="text-muted text-xs">Medicina · 2º semestre</div>
             </div>
             <div style="text-align:right; font-size:.78rem; color:var(--text-light);">
               Solicitado<br><strong>há 1h</strong>
@@ -263,8 +263,8 @@
           <div class="passenger-header">
             <div class="pass-avatar" style="background:linear-gradient(135deg,#3f51b5,#2196f3);">JS</div>
             <div style="flex:1;">
-              <div style="font-weight:700;">João Silva</div>
-              <div style="font-size:.78rem; color:var(--text-light);">Aceito às 06:45 · Carona de hoje 07:30</div>
+              <div class="fw-700">João Silva</div>
+              <div class="text-muted text-xs">Aceito às 06:45 · Carona de hoje 07:30</div>
             </div>
             <span class="badge badge-green">✅ Aceito</span>
           </div>
@@ -296,7 +296,7 @@
             </div>
             <span class="badge badge-green">Ativa</span>
           </div>
-          <div style="font-size:.85rem; color:var(--text-light);">👥 1/3 passageiros · ⏳ 2 pendentes</div>
+          <div class="text-muted">👥 1/3 passageiros · ⏳ 2 pendentes</div>
           <div class="action-btns">
             <a href="solicitacoes.html" class="btn btn-outline btn-sm">Ver solicitações</a>
             <button class="btn btn-ghost btn-sm" onclick="cancelarCarona()">🚫 Cancelar carona</button>
@@ -311,7 +311,7 @@
             </div>
             <span class="badge badge-blue">Agendada</span>
           </div>
-          <div style="font-size:.85rem; color:var(--text-light);">👥 0/2 passageiros · ⏳ 1 pendente</div>
+          <div class="text-muted">👥 0/2 passageiros · ⏳ 1 pendente</div>
           <div class="action-btns">
             <a href="solicitacoes.html" class="btn btn-outline btn-sm">Ver solicitações</a>
             <button class="btn btn-ghost btn-sm">✏️ Editar</button>
@@ -324,7 +324,7 @@
 
   <!-- Modal aceitar -->
   <div class="modal-overlay" id="modal-aceitar">
-    <div class="modal" style="text-align:center;">
+    <div class="modal" class="text-center">
       <div style="font-size:3rem; margin-bottom:.5rem;">✅</div>
       <h2 style="color:var(--primary); margin-bottom:.5rem;" id="modal-nome">Solicitação Aceita!</h2>
       <p style="color:var(--text-light); margin-bottom:1.5rem;" id="modal-msg">O passageiro foi notificado e confirmou sua presença.</p>
@@ -332,14 +332,8 @@
     </div>
   </div>
 
+  <script src="js/app.js"></script>
   <script>
-    function showTab(name, el) {
-      document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
-      document.getElementById('tab-' + name).style.display = 'block';
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      el.classList.add('active');
-    }
-
     function aceitar(id, nome) {
       const card = document.getElementById(id);
       card.style.opacity = '0.5';
@@ -374,17 +368,11 @@
 
     function cancelarCarona() {
       if(confirm('Tem certeza que deseja cancelar esta carona? Os passageiros serão notificados.')) {
-        alert('Carona cancelada. Passageiros notificados.');
+        showToast('Carona cancelada. Passageiros notificados.', 'warning');
       }
     }
 
-    function fecharModal() {
-      document.getElementById('modal-aceitar').classList.remove('open');
-    }
-
-    document.getElementById('modal-aceitar').addEventListener('click', function(e) {
-      if(e.target === this) fecharModal();
-    });
+    function fecharModal() { closeModal('modal-aceitar'); }
   </script>
 </body>
 </html>

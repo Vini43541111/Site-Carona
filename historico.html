@@ -205,7 +205,7 @@
         <div class="hist-card">
           <div class="hist-header">
             <div>
-              <div style="font-weight:700;">Centro → Campus Unoesc</div>
+              <div class="fw-700">Centro → Campus Unoesc</div>
               <div style="font-size:.78rem; color:var(--text-light); margin-top:.2rem;">📅 09/04/2026 · ⏰ 07:30 · ⏱ 19 min</div>
             </div>
             <span class="badge badge-gray">Concluída</span>
@@ -230,7 +230,7 @@
         <div class="hist-card">
           <div class="hist-header">
             <div>
-              <div style="font-weight:700;">Campus Unoesc → Centro</div>
+              <div class="fw-700">Campus Unoesc → Centro</div>
               <div style="font-size:.78rem; color:var(--text-light); margin-top:.2rem;">📅 08/04/2026 · ⏰ 17:30 · ⏱ 21 min</div>
             </div>
             <span class="badge badge-gray">Concluída</span>
@@ -255,7 +255,7 @@
         <div class="hist-card">
           <div class="hist-header">
             <div>
-              <div style="font-weight:700;">Bairro Efapi → Campus Unoesc</div>
+              <div class="fw-700">Bairro Efapi → Campus Unoesc</div>
               <div style="font-size:.78rem; color:var(--text-light); margin-top:.2rem;">📅 07/04/2026 · ⏰ 07:45 · ⏱ 23 min</div>
             </div>
             <span class="badge badge-gray">Concluída</span>
@@ -284,8 +284,8 @@
         <div class="hist-card" style="border-color:#a5d6a7;">
           <div class="hist-header">
             <div>
-              <div style="font-weight:700;">Centro → Campus Unoesc</div>
-              <div style="font-size:.78rem; color:var(--text-light);">📅 Hoje · ⏰ 07:30 · Carlos Medeiros</div>
+              <div class="fw-700">Centro → Campus Unoesc</div>
+              <div class="text-muted text-xs">📅 Hoje · ⏰ 07:30 · Carlos Medeiros</div>
             </div>
             <span class="badge badge-green">Confirmada</span>
           </div>
@@ -297,8 +297,8 @@
         <div class="hist-card" style="border-color:#90caf9;">
           <div class="hist-header">
             <div>
-              <div style="font-weight:700;">Campus Unoesc → Bairro Efapi</div>
-              <div style="font-size:.78rem; color:var(--text-light);">📅 Hoje · ⏰ 17:45 · Você oferece</div>
+              <div class="fw-700">Campus Unoesc → Bairro Efapi</div>
+              <div class="text-muted text-xs">📅 Hoje · ⏰ 17:45 · Você oferece</div>
             </div>
             <span class="badge badge-blue">Você oferece</span>
           </div>
@@ -313,14 +313,14 @@
     <div id="tab-passadas" style="display:none;">
       <div style="display:flex; flex-direction:column; gap:.75rem;">
         <div class="hist-card">
-          <div style="font-weight:700;">Centro → Campus · 09/04 · Carlos Medeiros</div>
+          <div class="fw-700">Centro → Campus · 09/04 · Carlos Medeiros</div>
           <div style="margin-top:.4rem;" class="rating-inline">
             <span class="s">★</span><span class="s">★</span><span class="s">★</span><span class="s">★</span><span class="s">★</span>
             <span style="font-size:.75rem;color:var(--text-light);margin-left:.3rem;">5.0 · Avaliado</span>
           </div>
         </div>
         <div class="hist-card">
-          <div style="font-weight:700;">Campus → Centro · 08/04 · João Oliveira</div>
+          <div class="fw-700">Campus → Centro · 08/04 · João Oliveira</div>
           <div style="margin-top:.4rem;" class="rating-inline">
             <span class="s">★</span><span class="s">★</span><span class="s">★</span><span class="s">★</span><span class="s off">★</span>
             <span style="font-size:.75rem;color:var(--text-light);margin-left:.3rem;">4.0 · Avaliado</span>
@@ -334,14 +334,14 @@
       <div class="alert alert-warning">⭐ Você tem 2 caronas aguardando avaliação!</div>
       <div style="display:flex; flex-direction:column; gap:.75rem;">
         <div class="hist-card" style="border-color:var(--warning);">
-          <div style="font-weight:700;">Efapi → Campus · 07/04 · Ana Souza</div>
+          <div class="fw-700">Efapi → Campus · 07/04 · Ana Souza</div>
           <div style="font-size:.82rem; color:var(--text-light); margin:.3rem 0;">🚗 HB20 Branco · Como passageiro</div>
           <div class="hist-actions">
             <a href="avaliacao.html" class="btn btn-primary">⭐ Avaliar agora</a>
           </div>
         </div>
         <div class="hist-card" style="border-color:var(--warning);">
-          <div style="font-weight:700;">Centro → Campus · 05/04 · Maria Lima</div>
+          <div class="fw-700">Centro → Campus · 05/04 · Maria Lima</div>
           <div style="font-size:.82rem; color:var(--text-light); margin:.3rem 0;">🚗 Ônix Vermelho · Como passageiro</div>
           <div class="hist-actions">
             <a href="avaliacao.html" class="btn btn-primary">⭐ Avaliar agora</a>
@@ -352,13 +352,6 @@
 
   </div>
 
-  <script>
-    function showTab(name, el) {
-      document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
-      document.getElementById('tab-' + name).style.display = 'block';
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      el.classList.add('active');
-    }
-  </script>
+  <script src="js/app.js"></script>
 </body>
 </html>

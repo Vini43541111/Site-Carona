@@ -454,3 +454,77 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+/* ───── UTILIDADES ───── */
+.flex-row     { display: flex; align-items: center; gap: .75rem; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.flex-col     { display: flex; flex-direction: column; gap: .6rem; }
+.flex-wrap    { flex-wrap: wrap; }
+.flex-1       { flex: 1; }
+
+.text-muted   { font-size: .85rem; color: var(--text-light); }
+.text-sm      { font-size: .82rem; }
+.text-xs      { font-size: .75rem; }
+.text-center  { text-align: center; }
+.text-right   { text-align: right; }
+
+.fw-600 { font-weight: 600; }
+.fw-700 { font-weight: 700; }
+
+.color-primary   { color: var(--primary); }
+.color-secondary { color: var(--secondary); }
+.color-muted     { color: var(--text-light); }
+.color-danger    { color: var(--danger); }
+.color-warning   { color: var(--warning); }
+.color-green     { color: #2e7d32; }
+
+.mt-xs  { margin-top: .35rem; }
+.mt-sm  { margin-top: .6rem; }
+.mt-1   { margin-top: 1rem; }
+.mb-xs  { margin-bottom: .35rem; }
+.mb-sm  { margin-bottom: .6rem; }
+.mb-1   { margin-bottom: 1rem; }
+.gap-sm { gap: .5rem; }
+.gap-1  { gap: 1rem; }
+
+.w-full  { width: 100%; }
+.no-wrap { white-space: nowrap; }
+
+/* Avatar colorido genérico */
+.avatar-colored {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 1rem;
+  flex-shrink: 0;
+}
+.avatar-green  { background: linear-gradient(135deg, #00a651, #007a3d); }
+.avatar-blue   { background: linear-gradient(135deg, #1a4a7a, #0d2b52); }
+.avatar-purple { background: linear-gradient(135deg, #9c27b0, #6a1b9a); }
+.avatar-pink   { background: linear-gradient(135deg, #e91e63, #9c27b0); }
+.avatar-orange { background: linear-gradient(135deg, #ff9800, #e65100); }
+
+/* Seção com título e borda lateral verde */
+.section-label {
+  font-size: .78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--text-light);
+  border-left: 3px solid var(--secondary);
+  padding-left: .5rem;
+  margin-bottom: .75rem;
+}
+
+/* Info row — label + valor em linha */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: .88rem;
+  padding: .3rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.info-row:last-child { border-bottom: none; }
+.info-label { color: var(--text-light); }
+.info-value { font-weight: 600; }

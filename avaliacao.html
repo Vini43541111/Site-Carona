@@ -150,7 +150,7 @@
     <div class="avaliacao-secao">
       <div class="secao-title">👤 Avaliar Carlos Medeiros</div>
 
-      <div style="text-align:center;">
+      <div class="text-center">
         <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--primary-mid),var(--secondary));display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.8rem;font-weight:700;margin:0 auto .75rem;">CM</div>
         <div style="font-size:.9rem; color:var(--text-light); margin-bottom:.5rem;">Como foi sua experiência com este motorista?</div>
       </div>
@@ -259,7 +259,7 @@
 
   <!-- Sucesso Modal -->
   <div class="modal-overlay" id="modal-ok">
-    <div class="modal" style="text-align:center;">
+    <div class="modal" class="text-center">
       <div style="font-size:4rem; margin-bottom:.5rem;">🌟</div>
       <h2 style="color:var(--primary); margin-bottom:.5rem;">Avaliação Enviada!</h2>
       <p style="color:var(--text-light); margin-bottom:.5rem;">
@@ -314,13 +314,8 @@
       document.getElementById('char-count').textContent = `${Math.min(len, 200)}/200 caracteres`;
     });
 
-    function enviarAvaliacao() {
-      document.getElementById('modal-ok').classList.add('open');
-    }
-
-    document.getElementById('modal-ok').addEventListener('click', function(e) {
-      if(e.target === this) this.classList.remove('open');
-    });
+    function enviarAvaliacao() { openModal('modal-ok'); }
   </script>
+  <script src="js/app.js"></script>
 </body>
 </html>

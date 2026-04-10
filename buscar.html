@@ -85,12 +85,12 @@
       <div class="form-row form-row-3" style="align-items:flex-end; gap:1rem;">
         <div class="form-group" style="margin-bottom:0; position:relative;">
           <label class="form-label">📍 Origem</label>
-          <input type="text" id="input-origem" class="form-control" placeholder="Ponto de embarque..." value="Centro, Chapecó" />
-          <button onclick="usarLocalizacao()" style="position:absolute;right:.5rem;top:2.1rem;background:none;border:none;cursor:pointer;font-size:1rem;" title="Usar minha localização">📌</button>
+          <input type="text" id="input-origem" name="origem" class="form-control" placeholder="Ponto de embarque..." />
+          <button type="button" onclick="usarLocalizacaoBusca()" style="position:absolute;right:.5rem;top:2.1rem;background:none;border:none;cursor:pointer;font-size:1rem;" title="Usar minha localização">📌</button>
         </div>
         <div class="form-group" style="margin-bottom:0;">
           <label class="form-label">🏁 Destino</label>
-          <input type="text" id="input-destino" class="form-control" placeholder="Para onde vai..." value="Campus Unoesc" />
+          <input type="text" id="input-destino" name="destino" class="form-control" placeholder="Para onde vai..." />
         </div>
         <div class="form-group" style="margin-bottom:0;">
           <label class="form-label">📅 Data e Hora</label>
@@ -98,8 +98,8 @@
         </div>
       </div>
       <div style="display:flex; gap:.75rem; margin-top:1rem; align-items:center;">
-        <button class="btn btn-primary" onclick="buscarCaronas()">🔍 Buscar Caronas</button>
-        <button class="btn btn-ghost" onclick="limparBusca()">✕ Limpar</button>
+        <button type="button" class="btn btn-primary" onclick="buscarCaronas()">🔍 Buscar Caronas</button>
+        <button type="button" class="btn btn-ghost" onclick="limparBusca()">✕ Limpar</button>
         <span id="buscando" style="font-size:.82rem;color:var(--text-light);display:none;">Buscando...</span>
       </div>
     </div>
@@ -289,108 +289,61 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/app.js"></script>
   <script>
-    // Chapecó - SC (Unoesc)
-    const MAP_CENTER = [-27.0954, -52.6150];
-    const CAMPUS = [-27.0954, -52.6150];
-
-    const map = L.map('map').setView(MAP_CENTER, 13);
+    const map = L.map('map').setView(MAP_CENTER, MAP_ZOOM);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap',
-      maxZoom: 19
+      attribution: '© OpenStreetMap', maxZoom: 19,
     }).addTo(map);
 
-    // Custom icons
-    const greenIcon = L.divIcon({
-      className: '',
-      html: '<div style="background:#00a651;width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>',
-      iconSize: [30, 30], iconAnchor: [15, 30]
-    });
-    const blueIcon = L.divIcon({
-      className: '',
-      html: '<div style="background:#1a4a7a;width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>',
-      iconSize: [30, 30], iconAnchor: [15, 30]
-    });
-    const carIcon = L.divIcon({
+    const greenIcon = createPinIcon('#00a651');
+    const blueIcon  = createPinIcon('#1a4a7a');
+    const carIcon   = L.divIcon({
       className: '',
       html: '<div style="background:#fff;width:32px;height:32px;border-radius:50%;border:3px solid #00a651;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.2);">🚗</div>',
-      iconSize: [32, 32], iconAnchor: [16, 16]
+      iconSize: [32, 32], iconAnchor: [16, 16],
     });
 
-    // Campus marker (destination)
-    L.marker(CAMPUS, { icon: blueIcon })
-      .addTo(map)
+    L.marker(MAP_CENTER, { icon: blueIcon }).addTo(map)
       .bindPopup('<b>Campus Unoesc</b><br>Destino principal');
 
-    // Ride markers
     const rides = [
       { lat: -27.087, lng: -52.618, label: 'Carlos Medeiros', time: '07:30', slots: 2 },
-      { lat: -27.073, lng: -52.605, label: 'Ana Souza', time: '07:45', slots: 1 },
-      { lat: -27.080, lng: -52.635, label: 'João Oliveira', time: '08:00', slots: 3 },
-      { lat: -27.100, lng: -52.625, label: 'Maria Lima', time: '08:15', slots: 2 },
+      { lat: -27.073, lng: -52.605, label: 'Ana Souza',       time: '07:45', slots: 1 },
+      { lat: -27.080, lng: -52.635, label: 'João Oliveira',   time: '08:00', slots: 3 },
+      { lat: -27.100, lng: -52.625, label: 'Maria Lima',      time: '08:15', slots: 2 },
     ];
 
-    const markers = rides.map(r => {
-      const m = L.marker([r.lat, r.lng], { icon: carIcon })
-        .addTo(map)
+    const markers = rides.map((r, i) => {
+      const m = L.marker([r.lat, r.lng], { icon: carIcon }).addTo(map)
         .bindPopup(`<b>${r.label}</b><br>🕐 ${r.time} · 👥 ${r.slots} vagas<br><a href="detalhes.html" style="color:#00a651;">Ver detalhes →</a>`);
+      m.on('mouseover', () => { const c = document.getElementById('card-' + (i+1)); if(c) c.style.borderColor = '#00a651'; });
+      m.on('mouseout',  () => { const c = document.getElementById('card-' + (i+1)); if(c) c.style.borderColor = ''; });
       return m;
     });
 
-    // Draw route line example
-    const routeCoords = [
-      [-27.087, -52.618],
-      [-27.090, -52.614],
-      [-27.093, -52.612],
-      CAMPUS
-    ];
-    L.polyline(routeCoords, { color: '#00a651', weight: 3, opacity: .6, dashArray: '6,6' }).addTo(map);
+    L.polyline([[-27.087,-52.618],[-27.090,-52.614],[-27.093,-52.612], MAP_CENTER],
+      { color: '#00a651', weight: 3, opacity: .6, dashArray: '6,6' }).addTo(map);
 
-    // Origem marker (draggable)
-    let origemMarker = L.marker([-27.087, -52.618], { icon: greenIcon, draggable: true })
-      .addTo(map)
+    let origemMarker = L.marker([-27.087, -52.618], { icon: greenIcon, draggable: true }).addTo(map)
       .bindPopup('📍 Seu ponto de embarque<br><small>Arraste para ajustar</small>');
 
-    origemMarker.on('dragend', function(e) {
-      const pos = e.target.getLatLng();
-      reverseGeocode(pos.lat, pos.lng);
+    origemMarker.on('dragend', e => {
+      const { lat, lng } = e.target.getLatLng();
+      reverseGeocode(lat, lng, 'input-origem', null);
     });
 
-    map.on('click', function(e) {
+    map.on('click', e => {
       origemMarker.setLatLng(e.latlng);
-      reverseGeocode(e.latlng.lat, e.latlng.lng);
+      reverseGeocode(e.latlng.lat, e.latlng.lng, 'input-origem', null);
     });
 
-    async function reverseGeocode(lat, lng) {
-      try {
-        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
-        const d = await r.json();
-        const addr = d.display_name.split(',').slice(0,2).join(',');
-        document.getElementById('input-origem').value = addr;
-      } catch(e) {}
-    }
-
-    // Highlight card on marker hover
-    markers.forEach((m, i) => {
-      m.on('mouseover', () => {
-        const card = document.getElementById('card-' + (i+1));
-        if(card) card.style.borderColor = '#00a651';
+    function usarLocalizacaoBusca() {
+      usarLocalizacao((lat, lng) => {
+        origemMarker.setLatLng([lat, lng]);
+        map.setView([lat, lng], 14);
+        reverseGeocode(lat, lng, 'input-origem', null);
       });
-      m.on('mouseout', () => {
-        const card = document.getElementById('card-' + (i+1));
-        if(card) card.style.borderColor = '';
-      });
-    });
-
-    function usarLocalizacao() {
-      if(navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-          const { latitude: lat, longitude: lng } = pos.coords;
-          origemMarker.setLatLng([lat, lng]);
-          map.setView([lat, lng], 14);
-          reverseGeocode(lat, lng);
-        }, () => alert('Não foi possível obter sua localização.'));
-      }
     }
 
     function buscarCaronas() {
@@ -409,10 +362,7 @@
       el.classList.add('active');
     }
 
-    // Set default date to today
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    document.getElementById('input-data').value = now.toISOString().slice(0,16);
+    document.getElementById('input-data').value = todayISO();
   </script>
 </body>
 </html>

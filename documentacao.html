@@ -523,9 +523,9 @@
           </defs>
 
           <!-- ── entidades ── -->
-          <!-- USUARIO -->
+          <!-- USUÁRIO -->
           <rect x="10" y="110" width="130" height="36" rx="6" fill="#0d2b52"/>
-          <text x="75" y="133" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">USUARIO</text>
+          <text x="75" y="133" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">USUÁRIO</text>
 
           <!-- CARONA -->
           <rect x="310" y="110" width="130" height="36" rx="6" fill="#1a4a7a"/>
@@ -535,17 +535,17 @@
           <rect x="620" y="110" width="130" height="36" rx="6" fill="#6a1b9a"/>
           <text x="685" y="133" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">MENSAGEM</text>
 
-          <!-- SOLICITACAO -->
+          <!-- SOLICITAÇÃO -->
           <rect x="10" y="240" width="130" height="36" rx="6" fill="#e65100"/>
-          <text x="75" y="263" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">SOLICITACAO</text>
+          <text x="75" y="263" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">SOLICITAÇÃO</text>
 
-          <!-- AVALIACAO -->
+          <!-- AVALIAÇÃO -->
           <rect x="310" y="240" width="130" height="36" rx="6" fill="#2e7d32"/>
-          <text x="375" y="263" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">AVALIACAO</text>
+          <text x="375" y="263" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">AVALIAÇÃO</text>
 
           <!-- ── linhas ── -->
 
-          <!-- USUARIO → CARONA (oferece, 1:N) -->
+          <!-- USUÁRIO → CARONA (oferece, 1:N) -->
           <line x1="140" y1="128" x2="308" y2="128" stroke="#444" stroke-width="1.5" marker-end="url(#arr)"/>
           <text x="152" y="122" font-size="11" fill="#333" font-weight="600">1</text>
           <text x="287" y="122" font-size="11" fill="#333" font-weight="600">N</text>
@@ -557,33 +557,33 @@
           <text x="598" y="122" font-size="11" fill="#333" font-weight="600">N</text>
           <text x="530" y="118" font-size="10" fill="#888" text-anchor="middle">contexto</text>
 
-          <!-- USUARIO → SOLICITACAO (solicita, 1:N) -->
+          <!-- USUÁRIO → SOLICITAÇÃO (solicita, 1:N) -->
           <line x1="75" y1="146" x2="75" y2="238" stroke="#444" stroke-width="1.5" marker-end="url(#arr)"/>
           <text x="80" y="165" font-size="11" fill="#333" font-weight="600">1</text>
           <text x="80" y="230" font-size="11" fill="#333" font-weight="600">N</text>
           <text x="90" y="197" font-size="10" fill="#888">solicita</text>
 
-          <!-- CARONA → SOLICITACAO (recebe, 1:N) -->
-          <!-- polyline: desce do CARONA, vai para a esquerda até SOLICITACAO -->
+          <!-- CARONA → SOLICITAÇÃO (recebe, 1:N) -->
+          <!-- polyline: desce do CARONA, vai para a esquerda até SOLICITAÇÃO -->
           <polyline points="340,146 340,200 140,200 140,238" fill="none" stroke="#444" stroke-width="1.5" marker-end="url(#arr)"/>
           <text x="345" y="163" font-size="11" fill="#333" font-weight="600">1</text>
           <text x="145" y="232" font-size="11" fill="#333" font-weight="600">N</text>
           <text x="240" y="194" font-size="10" fill="#888" text-anchor="middle">recebe</text>
 
-          <!-- CARONA → AVALIACAO (gera, 1:N) -->
+          <!-- CARONA → AVALIAÇÃO (gera, 1:N) -->
           <line x1="375" y1="146" x2="375" y2="238" stroke="#444" stroke-width="1.5" marker-end="url(#arr)"/>
           <text x="380" y="165" font-size="11" fill="#333" font-weight="600">1</text>
           <text x="380" y="230" font-size="11" fill="#333" font-weight="600">N</text>
           <text x="390" y="197" font-size="10" fill="#888">gera</text>
 
-          <!-- USUARIO → AVALIACAO (avalia, 1:N) -->
+          <!-- USUÁRIO → AVALIAÇÃO (avalia, 1:N) -->
           <!-- polyline: vai para baixo, depois para direita -->
           <polyline points="140,146 140,270 308,270" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
           <text x="145" y="162" font-size="11" fill="#333" font-weight="600">1</text>
           <text x="296" y="265" font-size="11" fill="#333" font-weight="600">N</text>
           <text x="170" y="265" font-size="10" fill="#888">avalia</text>
 
-          <!-- USUARIO → MENSAGEM (envia, 1:N) -->
+          <!-- USUÁRIO → MENSAGEM (envia, 1:N) -->
           <!-- polyline: sobe, vai para direita, desce -->
           <polyline points="75,110 75,20 685,20 685,108" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
           <text x="80" y="95" font-size="11" fill="#333" font-weight="600">1</text>
@@ -604,9 +604,9 @@
       <div style="font-size:.8rem;font-weight:700;color:#555;margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.5px;">Estrutura das Entidades</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem;">
 
-        <!-- USUARIO -->
+        <!-- USUÁRIO -->
         <div style="border:1.5px solid #0d2b52;border-radius:8px;overflow:hidden;font-size:.8rem;">
-          <div style="background:#0d2b52;color:#fff;font-weight:700;padding:.45rem .7rem;letter-spacing:.3px;">USUARIO</div>
+          <div style="background:#0d2b52;color:#fff;font-weight:700;padding:.45rem .7rem;letter-spacing:.3px;">USUÁRIO</div>
           <table style="width:100%;border-collapse:collapse;">
             <tr style="border-bottom:2px solid #e0e0e0;">
               <td style="padding:.3rem .5rem;color:#0d2b52;font-weight:700;white-space:nowrap;">PK id</td>
@@ -615,7 +615,7 @@
             <tr><td style="padding:.28rem .5rem;">nome</td><td style="padding:.28rem .5rem;color:#888;">VARCHAR(120)</td></tr>
             <tr style="background:#fafafa;"><td style="padding:.28rem .5rem;">email</td><td style="padding:.28rem .5rem;color:#888;">VARCHAR(150) UNIQUE</td></tr>
             <tr><td style="padding:.28rem .5rem;">senha_hash</td><td style="padding:.28rem .5rem;color:#888;">VARCHAR(255)</td></tr>
-            <tr style="background:#fafafa;"><td style="padding:.28rem .5rem;">reputacao</td><td style="padding:.28rem .5rem;color:#888;">DECIMAL(3,2)</td></tr>
+            <tr style="background:#fafafa;"><td style="padding:.28rem .5rem;">reputação</td><td style="padding:.28rem .5rem;color:#888;">DECIMAL(3,2)</td></tr>
             <tr><td style="padding:.28rem .5rem;">matricula</td><td style="padding:.28rem .5rem;color:#888;">VARCHAR(20) UNIQUE</td></tr>
             <tr style="background:#fafafa;"><td style="padding:.28rem .5rem;">created_at</td><td style="padding:.28rem .5rem;color:#888;">TIMESTAMP</td></tr>
           </table>
@@ -635,7 +635,7 @@
             <tr style="background:#fafafa;"><td style="padding:.28rem .5rem;">data_hora</td><td style="padding:.28rem .5rem;color:#888;">DATETIME</td></tr>
             <tr><td style="padding:.28rem .5rem;">vagas_total</td><td style="padding:.28rem .5rem;color:#888;">TINYINT</td></tr>
             <tr style="background:#fafafa;"><td style="padding:.28rem .5rem;">vagas_disp</td><td style="padding:.28rem .5rem;color:#888;">TINYINT</td></tr>
-            <tr><td style="padding:.28rem .5rem;">status</td><td style="padding:.28rem .5rem;color:#888;">ENUM(ativa, concluida, cancelada)</td></tr>
+            <tr><td style="padding:.28rem .5rem;">status</td><td style="padding:.28rem .5rem;color:#888;">ENUM(ativa, concluída, cancelada)</td></tr>
             <tr style="background:#fafafa;"><td style="padding:.28rem .5rem;">created_at</td><td style="padding:.28rem .5rem;color:#888;">TIMESTAMP</td></tr>
           </table>
         </div>
@@ -651,7 +651,7 @@
             <tr><td style="padding:.28rem .5rem;color:#007a3d;font-weight:600;">FK remetente_id</td><td style="padding:.28rem .5rem;color:#007a3d;">→ usuario.id</td></tr>
             <tr style="background:#fafafa;"><td style="padding:.28rem .5rem;color:#007a3d;font-weight:600;">FK destinat_id</td><td style="padding:.28rem .5rem;color:#007a3d;">→ usuario.id</td></tr>
             <tr><td style="padding:.28rem .5rem;color:#007a3d;font-weight:600;">FK carona_id</td><td style="padding:.28rem .5rem;color:#007a3d;">→ carona.id</td></tr>
-            <tr style="background:#fafafa;"><td style="padding:.28rem .5rem;">conteudo</td><td style="padding:.28rem .5rem;color:#888;">TEXT</td></tr>
+            <tr style="background:#fafafa;"><td style="padding:.28rem .5rem;">conteúdo</td><td style="padding:.28rem .5rem;color:#888;">TEXT</td></tr>
             <tr><td style="padding:.28rem .5rem;">data_hora</td><td style="padding:.28rem .5rem;color:#888;">DATETIME</td></tr>
           </table>
         </div>
@@ -659,9 +659,9 @@
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
 
-        <!-- SOLICITACAO -->
+        <!-- SOLICITAÇÃO -->
         <div style="border:1.5px solid #e65100;border-radius:8px;overflow:hidden;font-size:.8rem;">
-          <div style="background:#e65100;color:#fff;font-weight:700;padding:.45rem .7rem;letter-spacing:.3px;">SOLICITACAO</div>
+          <div style="background:#e65100;color:#fff;font-weight:700;padding:.45rem .7rem;letter-spacing:.3px;">SOLICITAÇÃO</div>
           <table style="width:100%;border-collapse:collapse;">
             <tr style="border-bottom:2px solid #e0e0e0;">
               <td style="padding:.3rem .5rem;color:#0d2b52;font-weight:700;">PK id</td>
@@ -675,9 +675,9 @@
           </table>
         </div>
 
-        <!-- AVALIACAO -->
+        <!-- AVALIAÇÃO -->
         <div style="border:1.5px solid #2e7d32;border-radius:8px;overflow:hidden;font-size:.8rem;">
-          <div style="background:#2e7d32;color:#fff;font-weight:700;padding:.45rem .7rem;letter-spacing:.3px;">AVALIACAO</div>
+          <div style="background:#2e7d32;color:#fff;font-weight:700;padding:.45rem .7rem;letter-spacing:.3px;">AVALIAÇÃO</div>
           <table style="width:100%;border-collapse:collapse;">
             <tr style="border-bottom:2px solid #e0e0e0;">
               <td style="padding:.3rem .5rem;color:#0d2b52;font-weight:700;">PK id</td>
@@ -697,8 +697,8 @@
       <div style="display:flex;gap:1.5rem;flex-wrap:wrap;font-size:.78rem;padding:.75rem 1rem;background:#f8f9fb;border-radius:8px;border:1px solid #e0e0e0;">
         <span><strong style="color:#0d2b52;">PK</strong> = Chave Primária</span>
         <span><strong style="color:#007a3d;">FK</strong> = Chave Estrangeira (referência a outra tabela)</span>
-        <span>AVALIACAO possui <strong>2 FKs</strong> para USUARIO (avaliador e avaliado)</span>
-        <span>MENSAGEM possui <strong>2 FKs</strong> para USUARIO (remetente e destinatário)</span>
+        <span>AVALIAÇÃO possui <strong>2 FKs</strong> para USUÁRIO (avaliador e avaliado)</span>
+        <span>MENSAGEM possui <strong>2 FKs</strong> para USUÁRIO (remetente e destinatário)</span>
       </div>
 
     </div>

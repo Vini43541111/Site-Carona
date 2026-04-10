@@ -86,9 +86,9 @@
   </header>
 
   <div class="page">
-    <div style="margin-bottom:1rem;">
+    <div class="mb-1">
       <h1 style="font-size:1.3rem; color:var(--primary); margin-bottom:.25rem;">🚗 Oferecer Carona</h1>
-      <p style="font-size:.85rem; color:var(--text-light);">Preencha os dados da sua carona. Use o mapa para definir o trajeto.</p>
+      <p class="text-muted">Preencha os dados da sua carona. Use o mapa para definir o trajeto.</p>
     </div>
 
     <div class="criar-layout">
@@ -118,7 +118,7 @@
             <label class="form-label">Ponto de Origem</label>
             <div style="position:relative;">
               <input type="text" id="f-origem" class="form-control" placeholder="Clique no mapa ou digite..." oninput="updatePreview()" />
-              <button onclick="usarLocalizacao()" style="position:absolute;right:.5rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;" title="Usar minha localização">📌</button>
+              <button type="button" onclick="usarLocalizacaoCriar()" style="position:absolute;right:.5rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;" title="Usar minha localização">📌</button>
             </div>
             <div style="font-size:.75rem; color:var(--text-light); margin-top:.3rem;">💡 Clique no mapa para definir o ponto de partida</div>
           </div>
@@ -134,7 +134,7 @@
           </div>
         </div>
 
-        <div class="card" style="margin-top:1rem;">
+        <div class="card" class="mt-1">
           <div class="card-title">📅 Data e Horário</div>
           <div class="form-row form-row-2">
             <div class="form-group" style="margin-bottom:0;">
@@ -147,7 +147,7 @@
             </div>
           </div>
 
-          <div style="margin-top:1rem;">
+          <div class="mt-1">
             <label class="form-label" style="display:flex; align-items:center; gap:.5rem; cursor:pointer;">
               <input type="checkbox" id="f-recorrente" onchange="toggleRecorrencia()" style="accent-color:var(--secondary);width:16px;height:16px;" />
               🔁 Carona recorrente (repetir toda semana)
@@ -167,7 +167,7 @@
           </div>
         </div>
 
-        <div class="card" style="margin-top:1rem;">
+        <div class="card" class="mt-1">
           <div class="card-title">👥 Vagas e Veículo</div>
 
           <div class="form-group">
@@ -176,7 +176,7 @@
               <button class="vagas-btn" onclick="changeVagas(-1)">−</button>
               <span class="vagas-num" id="vagas-num">2</span>
               <button class="vagas-btn" onclick="changeVagas(1)">+</button>
-              <span style="font-size:.82rem; color:var(--text-light);">vagas disponíveis</span>
+              <span class="text-muted">vagas disponíveis</span>
             </div>
           </div>
 
@@ -196,7 +196,7 @@
           </div>
         </div>
 
-        <div class="card" style="margin-top:1rem;">
+        <div class="card" class="mt-1">
           <div class="card-title">📝 Preferências (opcional)</div>
           <div class="form-group">
             <label class="form-label">Observação para passageiros</label>
@@ -225,7 +225,7 @@
       <!-- Map -->
       <div class="map-sticky">
         <div class="card" style="padding:.7rem; margin-bottom:.75rem;">
-          <div style="font-size:.82rem; color:var(--text-light);">
+          <div class="text-muted">
             🟢 <b>Clique</b> para definir <b>origem</b> · 🔴 Duplo clique para definir <b>destino</b>
           </div>
         </div>
@@ -240,7 +240,7 @@
 
   <!-- Modal Sucesso -->
   <div class="modal-overlay" id="modal-sucesso">
-    <div class="modal" style="text-align:center;">
+    <div class="modal" class="text-center">
       <div style="font-size:3.5rem; margin-bottom:.75rem;">🎉</div>
       <h2 style="color:var(--primary); margin-bottom:.5rem;">Carona Publicada!</h2>
       <p style="color:var(--text-light); margin-bottom:1.5rem;">
@@ -254,26 +254,18 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/app.js"></script>
   <script>
-    const MAP_CENTER = [-27.0954, -52.6150];
-    const map = L.map('map').setView(MAP_CENTER, 13);
+    const map = L.map('map').setView(MAP_CENTER, MAP_ZOOM);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap', maxZoom: 19
+      attribution: '© OpenStreetMap', maxZoom: 19,
     }).addTo(map);
 
     let origemMarker = null, destinoMarker = null, routeLine = null;
     let vagas = 2;
 
-    const greenIcon = L.divIcon({
-      className: '',
-      html: '<div style="background:#00a651;width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>',
-      iconSize: [28, 28], iconAnchor: [14, 28]
-    });
-    const redIcon = L.divIcon({
-      className: '',
-      html: '<div style="background:#e53935;width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>',
-      iconSize: [28, 28], iconAnchor: [14, 28]
-    });
+    const greenIcon = createPinIcon('#00a651');
+    const redIcon   = createPinIcon('#e53935');
 
     // Default destination: Campus Unoesc
     destinoMarker = L.marker(MAP_CENTER, { icon: redIcon })
@@ -310,30 +302,20 @@
       map.fitBounds(routeLine.getBounds(), { padding: [40, 40] });
     }
 
-    async function reverseGeocode(lat, lng, inputId, previewId) {
-      try {
-        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
-        const d = await r.json();
-        const addr = d.display_name.split(',').slice(0,2).join(',').trim();
-        document.getElementById(inputId).value = addr;
-        document.getElementById(previewId).textContent = addr;
-      } catch(e) {}
-    }
-
-    function usarLocalizacao() {
-      if(navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-          const ll = L.latLng(pos.coords.latitude, pos.coords.longitude);
-          if(!origemMarker) {
-            origemMarker = L.marker(ll, { icon: greenIcon, draggable: true }).addTo(map).bindPopup('📍 Sua localização');
-          } else {
-            origemMarker.setLatLng(ll);
-          }
-          map.setView(ll, 15);
-          reverseGeocode(ll.lat, ll.lng, 'f-origem', 'prev-origem');
-          updateRoute();
-        });
-      }
+    function usarLocalizacaoCriar() {
+      usarLocalizacao((lat, lng) => {
+        const ll = L.latLng(lat, lng);
+        if (!origemMarker) {
+          origemMarker = L.marker(ll, { icon: greenIcon, draggable: true }).addTo(map)
+            .bindPopup('📍 Sua localização');
+          origemMarker.on('dragend', () => updateRoute());
+        } else {
+          origemMarker.setLatLng(ll);
+        }
+        map.setView(ll, 15);
+        reverseGeocode(lat, lng, 'f-origem', 'prev-origem');
+        updateRoute();
+      });
     }
 
     function changeVagas(delta) {
@@ -363,18 +345,9 @@
       }
     }
 
-    function publicarCarona() {
-      document.getElementById('modal-sucesso').classList.add('open');
-    }
+    function publicarCarona() { openModal('modal-sucesso'); }
 
-    document.getElementById('modal-sucesso').addEventListener('click', function(e) {
-      if(e.target === this) this.classList.remove('open');
-    });
-
-    // Set default date
-    const today = new Date();
-    today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
-    document.getElementById('f-data').value = today.toISOString().slice(0,10);
+    document.getElementById('f-data').value = todayDateISO();
     updatePreview();
   </script>
 </body>
