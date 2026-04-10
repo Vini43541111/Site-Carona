@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CaronaUni – Documentação do Projeto</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { background: #f0f2f5; }
+
+    .doc-hero {
+      background: linear-gradient(135deg, #0a1e38 0%, #1a4a7a 55%, #00a651 100%);
+      padding: 2.5rem 2rem;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .doc-hero h1 { font-size: 1.9rem; margin-bottom: .4rem; }
+    .doc-hero p  { font-size: .95rem; opacity: .85; }
+    .doc-hero .meta {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+      font-size: .82rem;
+      opacity: .8;
+    }
+
+    .doc-nav {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    .doc-nav a {
+      padding: .4rem 1rem;
+      border-radius: 20px;
+      background: #fff;
+      color: #1a4a7a;
+      text-decoration: none;
+      font-size: .82rem;
+      font-weight: 600;
+      border: 1.5px solid #dde3ea;
+      transition: all .15s;
+    }
+    .doc-nav a:hover { background: #e8f5e9; border-color: #00a651; color: #007a3d; }
+
+    .section {
+      background: #fff;
+      border-radius: 12px;
+      border: 1.5px solid #dde3ea;
+      padding: 1.75rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0d2b52;
+      border-left: 4px solid #00a651;
+      padding-left: .85rem;
+      margin-bottom: 1.25rem;
+    }
+    .section p { font-size: .9rem; color: #444; line-height: 1.7; margin-bottom: .75rem; }
+    .section ul, .section ol { padding-left: 1.4rem; font-size: .9rem; color: #444; line-height: 1.8; }
+
+    .req-table { width: 100%; border-collapse: collapse; font-size: .87rem; }
+    .req-table th {
+      background: #0d2b52;
+      color: #fff;
+      padding: .6rem .9rem;
+      text-align: left;
+      font-weight: 600;
+    }
+    .req-table td { padding: .6rem .9rem; border-bottom: 1px solid #eee; vertical-align: top; }
+    .req-table tr:nth-child(even) td { background: #f8f9fb; }
+    .req-table tr:hover td { background: #e8f5e9; }
+
+    .trace-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
+    .trace-table th {
+      background: #1a4a7a;
+      color: #fff;
+      padding: .5rem .8rem;
+      text-align: left;
+    }
+    .trace-table td { padding: .5rem .8rem; border: 1px solid #e0e0e0; }
+    .trace-table tr:nth-child(even) td { background: #f8f9fb; }
+
+    .tag {
+      display: inline-block;
+      padding: .15rem .55rem;
+      border-radius: 12px;
+      font-size: .75rem;
+      font-weight: 600;
+    }
+    .tag-green  { background: #e8f5e9; color: #2e7d32; }
+    .tag-blue   { background: #e3f2fd; color: #1565c0; }
+    .tag-orange { background: #fff3e0; color: #e65100; }
+
+    .prototipo-link {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+      border: 2px solid #a5d6a7;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      text-decoration: none;
+      color: #1b5e20;
+      transition: all .2s;
+      margin-bottom: 1rem;
+    }
+    .prototipo-link:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,166,81,.2); }
+    .prototipo-link .icon { font-size: 2rem; }
+    .prototipo-link .url  { font-size: .82rem; opacity: .75; margin-top: .15rem; font-family: monospace; }
+
+    .screen-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .screen-card {
+      border: 1.5px solid #dde3ea;
+      border-radius: 10px;
+      padding: .85rem;
+      text-align: center;
+      text-decoration: none;
+      color: #333;
+      transition: all .15s;
+      background: #fafafa;
+    }
+    .screen-card:hover { border-color: #00a651; background: #e8f5e9; }
+    .screen-card .icon { font-size: 1.75rem; margin-bottom: .4rem; }
+    .screen-card .name { font-size: .82rem; font-weight: 600; }
+    .screen-card .desc { font-size: .73rem; color: #777; margin-top: .2rem; }
+
+    /* ── ER DIAGRAM ── */
+    .er-wrap {
+      overflow-x: auto;
+      padding: 1rem 0;
+    }
+    .er-svg { min-width: 900px; }
+
+    .er-entity rect  { rx: 6; ry: 6; }
+    .er-header       { font-weight: 700; font-size: 13px; fill: #fff; }
+    .er-field        { font-size: 11px; fill: #333; }
+    .er-pk           { font-size: 11px; fill: #0d2b52; font-weight: 700; }
+    .er-fk           { font-size: 11px; fill: #007a3d; }
+    .er-line         { stroke: #555; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+    .er-card         { font-size: 11px; fill: #555; font-weight: 600; }
+
+    .arch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .arch-card {
+      border: 1.5px solid #dde3ea;
+      border-radius: 10px;
+      padding: 1rem;
+    }
+    .arch-card h4 { font-size: .88rem; font-weight: 700; color: #0d2b52; margin-bottom: .4rem; display: flex; align-items: center; gap: .4rem; }
+    .arch-card p  { font-size: .8rem; color: #666; line-height: 1.5; }
+
+    .timeline {
+      position: relative;
+      padding-left: 1.75rem;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 0; bottom: 0;
+      width: 2px;
+      background: #dde3ea;
+    }
+    .tl-item { position: relative; margin-bottom: 1.25rem; }
+    .tl-dot {
+      position: absolute;
+      left: -1.75rem;
+      top: 3px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #00a651;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 2px #00a651;
+    }
+    .tl-dot.pending { background: #ccc; box-shadow: 0 0 0 2px #ccc; }
+    .tl-title { font-weight: 700; font-size: .88rem; color: #0d2b52; margin-bottom: .2rem; }
+    .tl-desc  { font-size: .82rem; color: #666; line-height: 1.5; }
+
+    @media (max-width: 768px) {
+      .section { padding: 1.25rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="dashboard.html" class="header-logo">🎓 <span>Carona</span>Uni</a>
+    <nav class="header-nav">
+      <a href="dashboard.html">🏠 Protótipo</a>
+      <a href="documentacao.html" class="active">📄 Documentação</a>
+    </nav>
+    <div class="header-user">
+      <div class="avatar">V</div>
+      <span>Olá, Vinicius ▾</span>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <div class="doc-hero">
+    <h1>📄 Documentação do Projeto</h1>
+    <p>CaronaUni — Plataforma de Caronas Universitárias · Unoesc</p>
+    <div class="meta">
+      <span>📅 Semestre 2026/1</span>
+      <span>🏫 Unoesc Chapecó</span>
+      <span>🎓 Engenharia de Software</span>
+      <span>🔄 Versão 2.0 — Evolutiva</span>
+    </div>
+  </div>
+
+  <!-- Nav Interno -->
+  <div class="doc-nav">
+    <a href="#descricao">📋 Descrição</a>
+    <a href="#escopo">🎯 Escopo</a>
+    <a href="#requisitos">📝 Requisitos</a>
+    <a href="#arquitetura">🏗 Arquitetura</a>
+    <a href="#prototipo">🖥 Protótipo</a>
+    <a href="#er">🗄 Modelo ER</a>
+    <a href="#rastreabilidade">🔗 Rastreabilidade</a>
+    <a href="#execucao">📅 Plano</a>
+  </div>
+
+  <div style="max-width:1100px; margin:0 auto; padding:0 1.5rem 3rem;">
+
+    <!-- 1. DESCRIÇÃO -->
+    <div class="section" id="descricao">
+      <div class="section-title">1. Descrição do Sistema</div>
+      <p>
+        O <strong>CaronaUni</strong> é uma plataforma web de caronas universitárias desenvolvida para conectar, de forma simples e segura, estudantes da <strong>Unoesc (Universidade do Oeste de Santa Catarina)</strong> que oferecem vagas em seus veículos com estudantes que precisam de deslocamento até o campus.
+      </p>
+      <p>
+        A plataforma resolve problemas recorrentes na comunidade acadêmica: a dificuldade de encontrar caronas confiáveis, a ausência de um processo organizado para solicitar e confirmar vagas, e a falta de histórico e avaliação para aumentar a confiança entre usuários.
+      </p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;">
+        <div style="background:#f8f9fb;border-radius:8px;padding:1rem;">
+          <div style="font-weight:700;margin-bottom:.5rem;color:#0d2b52;">🎯 Propósito</div>
+          <ul>
+            <li>Facilitar o deslocamento diário da comunidade acadêmica</li>
+            <li>Reduzir custos individuais de transporte</li>
+            <li>Diminuir o número de veículos em circulação</li>
+            <li>Promover sustentabilidade no campus</li>
+          </ul>
+        </div>
+        <div style="background:#f8f9fb;border-radius:8px;padding:1rem;">
+          <div style="font-weight:700;margin-bottom:.5rem;color:#0d2b52;">⚙️ Como funciona</div>
+          <ol>
+            <li>Usuário faz login via SSO Unoesc (mock)</li>
+            <li>Motorista cria uma carona com rota e horário</li>
+            <li>Passageiro busca e solicita uma vaga</li>
+            <li>Motorista aceita ou recusa a solicitação</li>
+            <li>Após a carona, ambos se avaliam</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. ESCOPO -->
+    <div class="section" id="escopo">
+      <div class="section-title">2. Escopo do Sistema</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div>
+          <div style="font-weight:700;color:#2e7d32;margin-bottom:.5rem;">✅ Incluso (O que o sistema tem)</div>
+          <ul>
+            <li>Login e identificação de usuário (SSO mock)</li>
+            <li>Cadastro de carona com rota, horário e vagas</li>
+            <li>Mapa interativo para definição de trajeto</li>
+            <li>Busca de caronas disponíveis com filtros</li>
+            <li>Solicitação de vaga pelo passageiro</li>
+            <li>Aceite ou recusa da solicitação pelo motorista</li>
+            <li>Registro de avaliação pós-carona</li>
+            <li>Histórico de caronas realizadas</li>
+            <li>Gerenciamento de perfil e veículos</li>
+            <li>Sistema de notificações (simulado)</li>
+            <li>Caronas recorrentes por dia da semana</li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-weight:700;color:#c62828;margin-bottom:.5rem;">❌ Fora de Escopo</div>
+          <ul>
+            <li>Pagamento integrado</li>
+            <li>App mobile nativo completo</li>
+            <li>Otimização avançada de rotas (Waze/Maps)</li>
+            <li>Integração real com SSO da Unoesc</li>
+            <li>Chat em tempo real (WebSocket)</li>
+            <li>Backend e banco de dados reais</li>
+            <li>Notificações push nativas</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="margin-top:1rem;padding:1rem;background:#fff3e0;border-radius:8px;border-left:4px solid #f9a825;">
+        <strong>📌 Modalidade:</strong> Continuação evolutiva do projeto do semestre anterior.
+        Foco em documentação evolutiva, modelo ER e protótipo funcional navegável.
+        Modelo de execução: <strong>Ágil Incremental (iterativo)</strong>.
+      </div>
+    </div>
+
+    <!-- 3. REQUISITOS -->
+    <div class="section" id="requisitos">
+      <div class="section-title">3. Requisitos do Sistema</div>
+
+      <p style="margin-bottom:1rem;"><strong>3.1 Requisitos Funcionais</strong></p>
+      <table class="req-table" style="margin-bottom:1.5rem;">
+        <thead>
+          <tr><th>ID</th><th>Requisito</th><th>Prioridade</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>RF-P1</strong></td>
+            <td>Login de usuário via SSO Unoesc (real ou mock) com identificação e autenticação</td>
+            <td><span class="tag tag-orange">Alta</span></td>
+            <td><span class="tag tag-green">✓ Implementado</span></td>
+          </tr>
+          <tr>
+            <td><strong>RF-P2</strong></td>
+            <td>Criar carona com origem, destino, data/hora, número de vagas e preferências do motorista</td>
+            <td><span class="tag tag-orange">Alta</span></td>
+            <td><span class="tag tag-green">✓ Implementado</span></td>
+          </tr>
+          <tr>
+            <td><strong>RF-P3</strong></td>
+            <td>Buscar caronas disponíveis e visualizar detalhes da carona e do motorista</td>
+            <td><span class="tag tag-orange">Alta</span></td>
+            <td><span class="tag tag-green">✓ Implementado</span></td>
+          </tr>
+          <tr>
+            <td><strong>RF-P4</strong></td>
+            <td>Solicitar vaga em carona com mensagem opcional para o motorista</td>
+            <td><span class="tag tag-orange">Alta</span></td>
+            <td><span class="tag tag-green">✓ Implementado</span></td>
+          </tr>
+          <tr>
+            <td><strong>RF-P5</strong></td>
+            <td>Aceitar ou recusar solicitação com atualização automática de vagas e notificação</td>
+            <td><span class="tag tag-orange">Alta</span></td>
+            <td><span class="tag tag-green">✓ Implementado</span></td>
+          </tr>
+          <tr>
+            <td><strong>RF-P6</strong></td>
+            <td>Avaliar usuário após carona concluída com nota, critérios detalhados e comentário</td>
+            <td><span class="tag tag-blue">Média</span></td>
+            <td><span class="tag tag-green">✓ Implementado</span></td>
+          </tr>
+          <tr>
+            <td><strong>RF-P7</strong></td>
+            <td>Visualizar histórico de caronas (realizadas, futuras, pendentes de avaliação)</td>
+            <td><span class="tag tag-blue">Média</span></td>
+            <td><span class="tag tag-green">✓ Implementado</span></td>
+          </tr>
+          <tr>
+            <td><strong>RF-P8</strong></td>
+            <td>Gerenciar perfil do usuário, veículos cadastrados e preferências</td>
+            <td><span class="tag tag-blue">Média</span></td>
+            <td><span class="tag tag-green">✓ Implementado</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="margin-bottom:1rem;"><strong>3.2 Requisitos Não Funcionais</strong></p>
+      <table class="req-table">
+        <thead>
+          <tr><th>ID</th><th>Requisito</th><th>Categoria</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>RNF-P1</strong></td>
+            <td>API e banco de dados com arquitetura simples em camadas (Frontend → API REST → BD)</td>
+            <td><span class="tag tag-blue">Arquitetura</span></td>
+          </tr>
+          <tr>
+            <td><strong>RNF-P2</strong></td>
+            <td>Comunicação segura (HTTPS) e proteção de dados dos usuários</td>
+            <td><span class="tag tag-blue">Segurança</span></td>
+          </tr>
+          <tr>
+            <td><strong>RNF-P3</strong></td>
+            <td>Validação para evitar inconsistência de vagas (race condition)</td>
+            <td><span class="tag tag-blue">Consistência</span></td>
+          </tr>
+          <tr>
+            <td><strong>RNF-P4</strong></td>
+            <td>Interface responsiva com feedback claro de sucesso e erro para o usuário</td>
+            <td><span class="tag tag-blue">Usabilidade</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 4. ARQUITETURA -->
+    <div class="section" id="arquitetura">
+      <div class="section-title">4. Arquitetura do Sistema</div>
+      <p>O sistema segue uma arquitetura em camadas com separação entre Frontend, Backend e Dados, conforme o diagrama de componentes definido na modelagem.</p>
+
+      <div class="arch-grid">
+        <div class="arch-card" style="border-top:3px solid #00a651;">
+          <h4>🌐 Frontend (Interface Web)</h4>
+          <p>Protótipo em HTML5, CSS3 e JavaScript puro. Responsivo e navegável. Mapa interativo via Leaflet.js + OpenStreetMap.</p>
+          <div style="margin-top:.5rem;"><span class="tag tag-green">HTML/CSS/JS</span> <span class="tag tag-green">Leaflet.js</span></div>
+        </div>
+        <div class="arch-card" style="border-top:3px solid #1565c0;">
+          <h4>⚙️ Backend (API REST)</h4>
+          <p>Camada de serviços responsável pela lógica de negócio: autenticação, caronas, solicitações e avaliações.</p>
+          <div style="margin-top:.5rem;"><span class="tag tag-blue">Node.js / Python</span> <span class="tag tag-blue">REST API</span></div>
+        </div>
+        <div class="arch-card" style="border-top:3px solid #e65100;">
+          <h4>🗄 Banco de Dados</h4>
+          <p>Armazenamento relacional das entidades: Usuário, Carona, Solicitação, Avaliação e Mensagem.</p>
+          <div style="margin-top:.5rem;"><span class="tag tag-orange">PostgreSQL / MySQL</span></div>
+        </div>
+        <div class="arch-card" style="border-top:3px solid #7b1fa2;">
+          <h4>🔐 SSO Institucional</h4>
+          <p>Integração com o sistema de login da Unoesc para autenticação e validação de matrícula ativa.</p>
+          <div style="margin-top:.5rem;"><span class="tag" style="background:#f3e5f5;color:#7b1fa2;">Mock no protótipo</span></div>
+        </div>
+      </div>
+
+      <div style="margin-top:1.25rem;background:#f8f9fb;border-radius:8px;padding:1rem;font-size:.85rem;color:#555;">
+        <strong>Fluxo de dados:</strong>
+        Interface Web → <code>HTTPS</code> → API REST → Serviços (Carona / Usuário / Mensagem) → Banco de Dados
+        <br>Autenticação: Interface Web → SSO Unoesc → Token JWT → API REST
+      </div>
+    </div>
+
+    <!-- 5. PROTÓTIPO -->
+    <div class="section" id="prototipo">
+      <div class="section-title">5. Protótipo Navegável</div>
+      <p>O protótipo foi desenvolvido em HTML/CSS/JavaScript puro, sem dependências de build, e está hospedado no GitHub Pages para acesso público.</p>
+
+      <a href="https://viniciusoliveira-ai.github.io/Site-Carona/" target="_blank" class="prototipo-link">
+        <div class="icon">🚀</div>
+        <div>
+          <div style="font-size:1rem;font-weight:700;">Acessar Protótipo CaronaUni</div>
+          <div class="url">https://viniciusoliveira-ai.github.io/Site-Carona/</div>
+        </div>
+        <div style="margin-left:auto;font-size:1.3rem;">↗</div>
+      </a>
+
+      <p style="margin-bottom:.75rem;"><strong>Telas implementadas:</strong></p>
+      <div class="screen-grid">
+        <a href="index.html" class="screen-card">
+          <div class="icon">🔐</div>
+          <div class="name">Login</div>
+          <div class="desc">SSO Unoesc + formulário manual</div>
+        </a>
+        <a href="dashboard.html" class="screen-card">
+          <div class="icon">🏠</div>
+          <div class="name">Dashboard</div>
+          <div class="desc">Estatísticas, notificações, atalhos</div>
+        </a>
+        <a href="buscar.html" class="screen-card">
+          <div class="icon">🔍</div>
+          <div class="name">Buscar Carona</div>
+          <div class="desc">Mapa + lista de caronas + filtros</div>
+        </a>
+        <a href="criar.html" class="screen-card">
+          <div class="icon">➕</div>
+          <div class="name">Oferecer Carona</div>
+          <div class="desc">Mapa interativo + formulário</div>
+        </a>
+        <a href="detalhes.html" class="screen-card">
+          <div class="icon">📍</div>
+          <div class="name">Detalhes</div>
+          <div class="desc">Perfil do motorista + rota + avaliações</div>
+        </a>
+        <a href="solicitacoes.html" class="screen-card">
+          <div class="icon">📋</div>
+          <div class="name">Solicitações</div>
+          <div class="desc">Aceitar / recusar passageiros</div>
+        </a>
+        <a href="avaliacao.html" class="screen-card">
+          <div class="icon">⭐</div>
+          <div class="name">Avaliação</div>
+          <div class="desc">Estrelas + critérios + comentário</div>
+        </a>
+        <a href="historico.html" class="screen-card">
+          <div class="icon">📜</div>
+          <div class="name">Histórico</div>
+          <div class="desc">Caronas passadas e futuras</div>
+        </a>
+        <a href="perfil.html" class="screen-card">
+          <div class="icon">👤</div>
+          <div class="name">Perfil</div>
+          <div class="desc">Dados, veículos, preferências</div>
+        </a>
+      </div>
+
+      <div style="margin-top:1rem;padding:.85rem 1rem;background:#e3f2fd;border-radius:8px;font-size:.84rem;color:#1565c0;">
+        <strong>Critério de pronto atendido:</strong> Fluxo ponta a ponta funcionando (login → buscar → solicitar → aceitar → avaliar), mapa navegável com definição de origem/destino, protótipo hospedado e acessível via link público.
+      </div>
+    </div>
+
+    <!-- 6. MODELO ER -->
+    <div class="section" id="er">
+      <div class="section-title">6. Modelo Entidade-Relacionamento (ER)</div>
+      <p>O modelo ER a seguir representa a estrutura de dados do sistema, derivada do Diagrama de Classes e dos requisitos funcionais levantados.</p>
+
+      <div class="er-wrap">
+        <svg class="er-svg" viewBox="0 0 980 620" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#555"/>
+            </marker>
+          </defs>
+
+          <!-- ───── USUARIO ───── -->
+          <g class="er-entity" id="ent-usuario">
+            <!-- Header -->
+            <rect x="30" y="30" width="200" height="28" fill="#0d2b52" rx="6" ry="6"/>
+            <rect x="30" y="52" width="200" height="186" fill="#f8f9fb" stroke="#0d2b52" stroke-width="1.5" rx="0"/>
+            <rect x="30" y="210" width="200" height="8" fill="#f8f9fb" stroke="#0d2b52" stroke-width="1.5" rx="0" ry="0"/>
+            <!-- rounded bottom corners workaround -->
+            <rect x="30" y="52" width="200" height="174" fill="#f8f9fb" stroke="none"/>
+            <rect x="30" y="208" width="200" height="10" fill="#f8f9fb" stroke="#0d2b52" stroke-width="1.5" rx="6" ry="6"/>
+            <rect x="30" y="52" width="200" height="166" fill="#f8f9fb" stroke="#0d2b52" stroke-width="1.5"/>
+
+            <text x="130" y="50" class="er-header" text-anchor="middle" dominant-baseline="middle">USUARIO</text>
+            <!-- PK line -->
+            <line x1="30" y1="80" x2="230" y2="80" stroke="#0d2b52" stroke-width="1"/>
+            <text x="42" y="94" class="er-pk">🔑 id</text>
+            <text x="115" y="94" class="er-field" fill="#888">INT · PK · AUTO</text>
+            <text x="42" y="112" class="er-field">nome</text>
+            <text x="115" y="112" class="er-field" fill="#888">VARCHAR(120)</text>
+            <text x="42" y="130" class="er-field">email</text>
+            <text x="115" y="130" class="er-field" fill="#888">VARCHAR(150) · UNIQUE</text>
+            <text x="42" y="148" class="er-field">senha_hash</text>
+            <text x="115" y="148" class="er-field" fill="#888">VARCHAR(255)</text>
+            <text x="42" y="166" class="er-field">reputacao</text>
+            <text x="115" y="166" class="er-field" fill="#888">DECIMAL(3,2)</text>
+            <text x="42" y="184" class="er-field">matricula</text>
+            <text x="115" y="184" class="er-field" fill="#888">VARCHAR(20) · UNIQUE</text>
+            <text x="42" y="202" class="er-field">created_at</text>
+            <text x="115" y="202" class="er-field" fill="#888">TIMESTAMP</text>
+          </g>
+
+          <!-- ───── CARONA ───── -->
+          <g class="er-entity" id="ent-carona">
+            <rect x="380" y="30" width="220" height="28" fill="#1a4a7a" rx="6" ry="6"/>
+            <rect x="380" y="52" width="220" height="202" fill="#f8f9fb" stroke="#1a4a7a" stroke-width="1.5"/>
+            <rect x="380" y="246" width="220" height="10" fill="#f8f9fb" stroke="#1a4a7a" stroke-width="1.5" rx="6" ry="6"/>
+
+            <text x="490" y="50" class="er-header" text-anchor="middle" dominant-baseline="middle">CARONA</text>
+            <line x1="380" y1="80" x2="600" y2="80" stroke="#1a4a7a" stroke-width="1"/>
+            <text x="392" y="94" class="er-pk">🔑 id</text>
+            <text x="450" y="94" class="er-field" fill="#888">INT · PK · AUTO</text>
+            <text x="392" y="112" class="er-fk">🔗 motorista_id</text>
+            <text x="480" y="112" class="er-field" fill="#007a3d">FK → usuario.id</text>
+            <text x="392" y="130" class="er-field">origem</text>
+            <text x="450" y="130" class="er-field" fill="#888">VARCHAR(255)</text>
+            <text x="392" y="148" class="er-field">destino</text>
+            <text x="450" y="148" class="er-field" fill="#888">VARCHAR(255)</text>
+            <text x="392" y="166" class="er-field">data_hora</text>
+            <text x="450" y="166" class="er-field" fill="#888">DATETIME</text>
+            <text x="392" y="184" class="er-field">vagas_total</text>
+            <text x="465" y="184" class="er-field" fill="#888">TINYINT</text>
+            <text x="392" y="202" class="er-field">vagas_disp</text>
+            <text x="465" y="202" class="er-field" fill="#888">TINYINT</text>
+            <text x="392" y="220" class="er-field">status</text>
+            <text x="450" y="220" class="er-field" fill="#888">ENUM(ativa,concluida,cancelada)</text>
+            <text x="392" y="238" class="er-field">created_at</text>
+            <text x="450" y="238" class="er-field" fill="#888">TIMESTAMP</text>
+          </g>
+
+          <!-- ───── SOLICITACAO ───── -->
+          <g class="er-entity" id="ent-solicitacao">
+            <rect x="30" y="330" width="210" height="28" fill="#e65100" rx="6" ry="6"/>
+            <rect x="30" y="352" width="210" height="148" fill="#f8f9fb" stroke="#e65100" stroke-width="1.5"/>
+            <rect x="30" y="492" width="210" height="10" fill="#f8f9fb" stroke="#e65100" stroke-width="1.5" rx="6" ry="6"/>
+
+            <text x="135" y="350" class="er-header" text-anchor="middle" dominant-baseline="middle">SOLICITACAO</text>
+            <line x1="30" y1="380" x2="240" y2="380" stroke="#e65100" stroke-width="1"/>
+            <text x="42" y="394" class="er-pk">🔑 id</text>
+            <text x="90" y="394" class="er-field" fill="#888">INT · PK · AUTO</text>
+            <text x="42" y="412" class="er-fk">🔗 carona_id</text>
+            <text x="115" y="412" class="er-field" fill="#007a3d">FK → carona.id</text>
+            <text x="42" y="430" class="er-fk">🔗 passageiro_id</text>
+            <text x="140" y="430" class="er-field" fill="#007a3d">FK → usuario.id</text>
+            <text x="42" y="448" class="er-field">status</text>
+            <text x="90" y="448" class="er-field" fill="#888">ENUM(pendente,aceito,recusado)</text>
+            <text x="42" y="466" class="er-field">mensagem</text>
+            <text x="110" y="466" class="er-field" fill="#888">TEXT · NULLABLE</text>
+            <text x="42" y="484" class="er-field">created_at</text>
+            <text x="110" y="484" class="er-field" fill="#888">TIMESTAMP</text>
+          </g>
+
+          <!-- ───── AVALIACAO ───── -->
+          <g class="er-entity" id="ent-avaliacao">
+            <rect x="380" y="330" width="220" height="28" fill="#2e7d32" rx="6" ry="6"/>
+            <rect x="380" y="352" width="220" height="166" fill="#f8f9fb" stroke="#2e7d32" stroke-width="1.5"/>
+            <rect x="380" y="510" width="220" height="10" fill="#f8f9fb" stroke="#2e7d32" stroke-width="1.5" rx="6" ry="6"/>
+
+            <text x="490" y="350" class="er-header" text-anchor="middle" dominant-baseline="middle">AVALIACAO</text>
+            <line x1="380" y1="380" x2="600" y2="380" stroke="#2e7d32" stroke-width="1"/>
+            <text x="392" y="394" class="er-pk">🔑 id</text>
+            <text x="420" y="394" class="er-field" fill="#888">INT · PK · AUTO</text>
+            <text x="392" y="412" class="er-fk">🔗 avaliador_id</text>
+            <text x="470" y="412" class="er-field" fill="#007a3d">FK → usuario.id</text>
+            <text x="392" y="430" class="er-fk">🔗 avaliado_id</text>
+            <text x="470" y="430" class="er-field" fill="#007a3d">FK → usuario.id</text>
+            <text x="392" y="448" class="er-fk">🔗 carona_id</text>
+            <text x="460" y="448" class="er-field" fill="#007a3d">FK → carona.id</text>
+            <text x="392" y="466" class="er-field">nota</text>
+            <text x="430" y="466" class="er-field" fill="#888">TINYINT (1–5)</text>
+            <text x="392" y="484" class="er-field">comentario</text>
+            <text x="455" y="484" class="er-field" fill="#888">TEXT · NULLABLE</text>
+            <text x="392" y="502" class="er-field">created_at</text>
+            <text x="455" y="502" class="er-field" fill="#888">TIMESTAMP</text>
+          </g>
+
+          <!-- ───── MENSAGEM ───── -->
+          <g class="er-entity" id="ent-mensagem">
+            <rect x="720" y="180" width="220" height="28" fill="#6a1b9a" rx="6" ry="6"/>
+            <rect x="720" y="202" width="220" height="148" fill="#f8f9fb" stroke="#6a1b9a" stroke-width="1.5"/>
+            <rect x="720" y="342" width="220" height="10" fill="#f8f9fb" stroke="#6a1b9a" stroke-width="1.5" rx="6" ry="6"/>
+
+            <text x="830" y="198" class="er-header" text-anchor="middle" dominant-baseline="middle">MENSAGEM</text>
+            <line x1="720" y1="230" x2="940" y2="230" stroke="#6a1b9a" stroke-width="1"/>
+            <text x="732" y="244" class="er-pk">🔑 id</text>
+            <text x="760" y="244" class="er-field" fill="#888">INT · PK · AUTO</text>
+            <text x="732" y="262" class="er-fk">🔗 remetente_id</text>
+            <text x="820" y="262" class="er-field" fill="#007a3d">FK → usuario.id</text>
+            <text x="732" y="280" class="er-fk">🔗 destinat_id</text>
+            <text x="810" y="280" class="er-field" fill="#007a3d">FK → usuario.id</text>
+            <text x="732" y="298" class="er-fk">🔗 carona_id</text>
+            <text x="800" y="298" class="er-field" fill="#007a3d">FK → carona.id</text>
+            <text x="732" y="316" class="er-field">conteudo</text>
+            <text x="785" y="316" class="er-field" fill="#888">TEXT</text>
+            <text x="732" y="334" class="er-field">data_hora</text>
+            <text x="790" y="334" class="er-field" fill="#888">DATETIME</text>
+          </g>
+
+          <!-- ─── RELACIONAMENTOS (linhas) ─── -->
+
+          <!-- USUARIO (1) → CARONA (N): motorista_id -->
+          <line class="er-line" x1="230" y1="100" x2="378" y2="100" marker-end="url(#arrow)"/>
+          <text x="248" y="93" class="er-card">1</text>
+          <text x="355" y="93" class="er-card">N</text>
+          <text x="270" y="82" style="font-size:10px;fill:#888;">oferece</text>
+
+          <!-- USUARIO (1) → SOLICITACAO (N): passageiro_id -->
+          <line class="er-line" x1="130" y1="218" x2="130" y2="328" marker-end="url(#arrow)"/>
+          <text x="134" y="240" class="er-card">1</text>
+          <text x="134" y="316" class="er-card">N</text>
+          <text x="138" y="280" style="font-size:10px;fill:#888;">solicita</text>
+
+          <!-- CARONA (1) → SOLICITACAO (N): carona_id -->
+          <line class="er-line" x1="420" y1="256" x2="200" y2="368" marker-end="url(#arrow)"/>
+          <text x="418" y="276" class="er-card">1</text>
+          <text x="212" y="358" class="er-card">N</text>
+          <text x="290" y="300" style="font-size:10px;fill:#888;">recebe</text>
+
+          <!-- USUARIO (1) → AVALIACAO (N): avaliador -->
+          <line class="er-line" x1="230" y1="150" x2="378" y2="400" marker-end="url(#arrow)"/>
+          <text x="232" y="170" class="er-card">1</text>
+          <text x="363" y="392" class="er-card">N</text>
+          <text x="270" y="260" style="font-size:10px;fill:#888;">avalia</text>
+
+          <!-- CARONA (1) → AVALIACAO (N): carona_id -->
+          <line class="er-line" x1="490" y1="256" x2="490" y2="328" marker-end="url(#arrow)"/>
+          <text x="494" y="276" class="er-card">1</text>
+          <text x="494" y="316" class="er-card">N</text>
+          <text x="500" y="298" style="font-size:10px;fill:#888;">gera</text>
+
+          <!-- CARONA (1) → MENSAGEM (N): carona_id -->
+          <line class="er-line" x1="600" y1="160" x2="718" y2="230" marker-end="url(#arrow)"/>
+          <text x="606" y="172" class="er-card">1</text>
+          <text x="706" y="228" class="er-card">N</text>
+          <text x="638" y="190" style="font-size:10px;fill:#888;">contexto</text>
+
+          <!-- USUARIO (1) → MENSAGEM (N): remetente -->
+          <line class="er-line" x1="230" y1="120" x2="718" y2="262" marker-end="url(#arrow)"/>
+          <text x="234" y="130" class="er-card">1</text>
+          <text x="706" y="260" class="er-card">N</text>
+          <text x="430" y="175" style="font-size:10px;fill:#888;">envia</text>
+
+          <!-- Legenda -->
+          <rect x="30" y="560" width="580" height="50" fill="#f8f9fb" stroke="#dde3ea" stroke-width="1" rx="6"/>
+          <text x="45" y="579" style="font-size:11px;font-weight:700;fill:#0d2b52;">Legenda:</text>
+          <rect x="110" y="568" width="14" height="10" fill="#0d2b52" rx="2"/>
+          <text x="128" y="579" style="font-size:10px;fill:#333;">PK = Chave Primária</text>
+          <rect x="240" y="568" width="14" height="10" fill="#007a3d" rx="2"/>
+          <text x="258" y="579" style="font-size:10px;fill:#333;">FK = Chave Estrangeira</text>
+          <line x1="390" y1="573" x2="415" y2="573" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <text x="420" y="579" style="font-size:10px;fill:#333;">= Relacionamento (1 para N)</text>
+          <text x="45" y="598" style="font-size:10px;fill:#666;">Cardinalidades: 1 = um / N = muitos</text>
+          <text x="240" y="598" style="font-size:10px;fill:#666;">Nota: AVALIACAO possui 2 FKs para USUARIO (avaliador e avaliado)</text>
+        </svg>
+      </div>
+
+      <div style="margin-top:1rem;">
+        <p style="margin-bottom:.75rem;"><strong>Descrição das entidades:</strong></p>
+        <table class="req-table">
+          <thead>
+            <tr><th>Entidade</th><th>Descrição</th><th>Relacionamentos</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>USUARIO</strong></td>
+              <td>Representa qualquer pessoa cadastrada na plataforma. Pode ser motorista, passageiro ou ambos.</td>
+              <td>1:N com Carona, Solicitacao, Avaliacao, Mensagem</td>
+            </tr>
+            <tr>
+              <td><strong>CARONA</strong></td>
+              <td>Uma oferta de transporte com origem, destino, horário e vagas disponíveis. Criada pelo motorista.</td>
+              <td>N:1 com Usuario (motorista); 1:N com Solicitacao, Avaliacao, Mensagem</td>
+            </tr>
+            <tr>
+              <td><strong>SOLICITACAO</strong></td>
+              <td>Pedido de um passageiro para ocupar uma vaga em uma carona. Tem estado (pendente/aceito/recusado).</td>
+              <td>N:1 com Carona e com Usuario (passageiro)</td>
+            </tr>
+            <tr>
+              <td><strong>AVALIACAO</strong></td>
+              <td>Nota e comentário que um usuário dá a outro após uma carona concluída. Bidirecional (motorista avalia passageiro e vice-versa).</td>
+              <td>N:1 com Carona; N:1 com Usuario (avaliador e avaliado — 2 FKs)</td>
+            </tr>
+            <tr>
+              <td><strong>MENSAGEM</strong></td>
+              <td>Comunicação direta entre motorista e passageiro no contexto de uma carona.</td>
+              <td>N:1 com Carona; N:1 com Usuario (remetente e destinatário — 2 FKs)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 7. RASTREABILIDADE -->
+    <div class="section" id="rastreabilidade">
+      <div class="section-title">7. Matriz de Rastreabilidade</div>
+      <p>Relação entre os requisitos funcionais e as modelagens e telas do protótipo.</p>
+      <table class="trace-table">
+        <thead>
+          <tr>
+            <th>Requisito</th>
+            <th>Caso de Uso</th>
+            <th>Diagrama de Sequência</th>
+            <th>Diagrama de Atividade</th>
+            <th>Tela no Protótipo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>RF-P1</strong> – Login</td>
+            <td>Fazer Login</td>
+            <td>Autenticação</td>
+            <td>—</td>
+            <td><a href="index.html" style="color:#00a651;">index.html</a></td>
+          </tr>
+          <tr>
+            <td><strong>RF-P2</strong> – Criar carona</td>
+            <td>Criar Carona</td>
+            <td>—</td>
+            <td>Criar Carona</td>
+            <td><a href="criar.html" style="color:#00a651;">criar.html</a></td>
+          </tr>
+          <tr>
+            <td><strong>RF-P3</strong> – Buscar carona</td>
+            <td>Buscar Carona</td>
+            <td>—</td>
+            <td>Buscar e Solicitar</td>
+            <td><a href="buscar.html" style="color:#00a651;">buscar.html</a> / <a href="detalhes.html" style="color:#00a651;">detalhes.html</a></td>
+          </tr>
+          <tr>
+            <td><strong>RF-P4</strong> – Solicitar vaga</td>
+            <td>Solicitar Vaga</td>
+            <td>Solicitar Carona</td>
+            <td>Buscar e Solicitar</td>
+            <td><a href="detalhes.html" style="color:#00a651;">detalhes.html</a></td>
+          </tr>
+          <tr>
+            <td><strong>RF-P5</strong> – Aceitar/Recusar</td>
+            <td>Aceitar Solicitação</td>
+            <td>Solicitar Carona</td>
+            <td>Processar Solicitação</td>
+            <td><a href="solicitacoes.html" style="color:#00a651;">solicitacoes.html</a></td>
+          </tr>
+          <tr>
+            <td><strong>RF-P6</strong> – Avaliar</td>
+            <td>Avaliar Usuário</td>
+            <td>Avaliar Carona</td>
+            <td>—</td>
+            <td><a href="avaliacao.html" style="color:#00a651;">avaliacao.html</a></td>
+          </tr>
+          <tr>
+            <td><strong>RF-P7</strong> – Histórico</td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+            <td><a href="historico.html" style="color:#00a651;">historico.html</a></td>
+          </tr>
+          <tr>
+            <td><strong>RF-P8</strong> – Perfil</td>
+            <td>Editar Perfil</td>
+            <td>—</td>
+            <td>—</td>
+            <td><a href="perfil.html" style="color:#00a651;">perfil.html</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 8. PLANO DE EXECUÇÃO -->
+    <div class="section" id="execucao">
+      <div class="section-title">8. Plano de Execução</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-title">Iteração 1 — Levantamento e Modelagem</div>
+          <div class="tl-desc">Revisão dos requisitos do semestre anterior. Atualização dos diagramas de caso de uso, classes, sequência e atividades. Definição do escopo da entrega.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-title">Iteração 2 — Protótipo (Login + Dashboard + Buscar)</div>
+          <div class="tl-desc">Desenvolvimento das telas de login, dashboard principal e busca de caronas com mapa interativo Leaflet.js + OpenStreetMap.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-title">Iteração 3 — Protótipo (Criar + Solicitar + Aceitar)</div>
+          <div class="tl-desc">Tela de criação de carona com mapa, fluxo de solicitação de vaga, tela de gerenciamento de solicitações do motorista.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-title">Iteração 4 — Protótipo (Avaliação + Histórico + Perfil)</div>
+          <div class="tl-desc">Tela de avaliação pós-carona com critérios detalhados, histórico de caronas com abas e tela de perfil com preferências.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-title">Iteração 5 — Modelo ER e Documentação</div>
+          <div class="tl-desc">Elaboração do modelo ER compatível com o fluxo principal, documentação evolutiva do projeto e publicação do protótipo via GitHub Pages.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot pending"></div>
+          <div class="tl-title" style="color:#999;">Próximo — Backend (API REST + Banco de Dados)</div>
+          <div class="tl-desc" style="color:#bbb;">Implementação real da API com Node.js/Python, banco de dados PostgreSQL e integração com SSO da Unoesc.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;padding:1rem;color:#999;font-size:.8rem;">
+      CaronaUni · Documentação v2.0 · Unoesc Chapecó · 2026/1<br>
+      <a href="dashboard.html" style="color:#00a651;">← Voltar ao Protótipo</a>
+    </div>
+
+  </div>
+</body>
+</html>
