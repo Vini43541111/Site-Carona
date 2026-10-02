@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CaronaUni – Buscar Carona</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%9A%97%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    .search-layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+    .results-list { display: flex; flex-direction: column; gap: .85rem; }
+
+    .map-wrap {
+      position: sticky;
+      top: 74px;
+    }
+    #map { height: 520px; border-radius: var(--radius); border: 1.5px solid var(--border); }
+
+    .filter-bar {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+    .filter-chip {
+      padding: .3rem .75rem;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      font-size: .8rem;
+      cursor: pointer;
+      background: var(--surface-2);
+      transition: all .15s;
+    }
+    .filter-chip:hover, .filter-chip.active {
+      background: var(--accent);
+      border-color: var(--secondary);
+      color: var(--secondary-dk);
+      font-weight: 600;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .results-count { font-size: .85rem; color: var(--text-light); }
+
+    @media (max-width: 900px) {
+      .search-layout { grid-template-columns: 1fr; }
+      .map-wrap { position: static; }
+      #map { height: 280px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="dashboard.html" class="header-logo">🎓 <span>Carona</span>Uni</a>
+    <nav class="header-nav">
+      <a href="dashboard.html">🏠 Início</a>
+      <a href="buscar.html" class="active">🔍 Buscar Carona</a>
+      <a href="criar.html">➕ Oferecer</a>
+      <a href="solicitacoes.html">📋 Solicitações</a>
+      <a href="historico.html">📜 Histórico</a>
+    </nav>
+    <a href="perfil.html" class="header-user" style="text-decoration:none;">
+      <div class="avatar">·</div>
+      <span>Olá ▾</span>
+    </a>
+  </header>
+
+  <div class="page">
+
+    <!-- Search Form -->
+    <div class="card" style="margin-bottom:1.25rem;">
+      <div class="card-title">🔍 Buscar Carona Disponível</div>
+      <div class="form-row form-row-3" style="align-items:flex-end; gap:1rem;">
+        <div class="form-group" style="margin-bottom:0; position:relative;">
+          <label class="form-label">📍 Origem</label>
+          <input type="text" id="input-origem" name="origem" class="form-control" placeholder="Ponto de embarque..." />
+          <button type="button" onclick="usarLocalizacaoBusca()" aria-label="Usar minha localização" style="position:absolute;right:.5rem;top:2.1rem;background:none;border:none;cursor:pointer;font-size:1rem;" title="Usar minha localização">📌</button>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">🏁 Destino</label>
+          <input type="text" id="input-destino" name="destino" class="form-control" placeholder="Para onde vai..." />
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">📅 Data e Hora</label>
+          <input type="datetime-local" id="input-data" class="form-control" />
+        </div>
+      </div>
+      <div style="display:flex; gap:.75rem; margin-top:1rem; align-items:center;">
+        <button type="button" class="btn btn-primary" onclick="buscarCaronas()">🔍 Buscar Caronas</button>
+        <button type="button" class="btn btn-ghost" onclick="limparBusca()">✕ Limpar</button>
+        <span id="buscando" style="font-size:.82rem;color:var(--text-light);display:none;">Buscando...</span>
+      </div>
+    </div>
+
+    <div class="search-layout">
+
+      <!-- Left: List -->
+      <div>
+        <!-- Filters -->
+        <div class="filter-bar">
+          <span style="font-size:.8rem; font-weight:600; color:var(--text-light);">Filtrar:</span>
+          <span class="filter-chip active" onclick="toggleFilter(this)">Todos</span>
+          <span class="filter-chip" onclick="toggleFilter(this)">⭐ 4.5+</span>
+          <span class="filter-chip" onclick="toggleFilter(this)">Hoje</span>
+          <span class="filter-chip" onclick="toggleFilter(this)">Vagas</span>
+        </div>
+
+        <div class="results-header">
+          <div class="results-count" id="results-count">Buscando...</div>
+          <select class="form-control" id="ordenar" style="width:auto;font-size:.8rem;padding:.35rem .7rem;" onchange="aplicarFiltro()">
+            <option value="horario">Ordenar: Horário</option>
+            <option value="avaliacao">Ordenar: Avaliação</option>
+            <option value="vagas">Ordenar: Vagas</option>
+          </select>
+        </div>
+
+        <div class="results-list"></div>
+      </div>
+
+      <!-- Right: Map -->
+      <div class="map-wrap">
+        <div class="card" style="padding:.75rem; margin-bottom:.75rem;">
+          <div style="font-size:.82rem; color:var(--text-light); display:flex; align-items:center; gap:.5rem;">
+            <span>🗺</span>
+            <span>Clique em um resultado para destacar no mapa. Clique no mapa para definir origem.</span>
+          </div>
+        </div>
+        <div id="map"></div>
+        <div class="card" style="padding:.75rem; margin-top:.75rem;">
+          <div style="display:flex; gap:1rem; font-size:.78rem; color:var(--text-light);">
+            <span>🟢 Origem</span>
+            <span>🔵 Destino</span>
+            <span>🚗 Motoristas</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    exigirLogin();
+    const map = L.map('map').setView(MAP_CENTER, MAP_ZOOM);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap', maxZoom: 19,
+    }).addTo(map);
+
+    const greenIcon = createPinIcon('#00a651');
+    const blueIcon  = createPinIcon('#1a4a7a');
+    const carIcon   = L.divIcon({
+      className: '',
+      html: '<div style="background:#161b22;width:30px;height:30px;border-radius:50%;border:2px solid #00c853;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.5);">🚗</div>',
+      iconSize: [30, 30], iconAnchor: [15, 15],
+    });
+
+    L.marker(CAMPUS_UNOESC, { icon: blueIcon }).addTo(map)
+      .bindPopup('<b>Campus Unoesc</b><br>Destino principal');
+
+    let origemMarker = L.marker(MAP_CENTER, { icon: greenIcon, draggable: true }).addTo(map)
+      .bindPopup('📍 Seu ponto de embarque<br><small>Arraste para ajustar</small>');
+
+    // pinos das caronas encontradas — só das que têm coordenada salva
+    let marcadoresCaronas = [];
+
+    function plotarCaronas(lista) {
+      marcadoresCaronas.forEach(m => m.remove());
+      marcadoresCaronas = lista
+        .filter(c => c.origem_lat && c.origem_lng)
+        .map(c => {
+          const hora = new Date(c.data_hora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+          const nome = c.motorista ? c.motorista.nome : 'Motorista';
+          return L.marker([Number(c.origem_lat), Number(c.origem_lng)], { icon: carIcon })
+            .addTo(map)
+            .bindPopup(
+              `<b>${escapeHtml(nome)}</b><br>🕐 ${hora} · 👥 ${c.vagas_disp} vaga${c.vagas_disp === 1 ? '' : 's'}` +
+              `<br><a href="detalhes.html?id=${c.id}">Ver detalhes →</a>`
+            );
+        });
+    }
+
+    origemMarker.on('dragend', e => {
+      const { lat, lng } = e.target.getLatLng();
+      reverseGeocode(lat, lng, 'input-origem', null);
+    });
+
+    map.on('click', e => {
+      origemMarker.setLatLng(e.latlng);
+      reverseGeocode(e.latlng.lat, e.latlng.lng, 'input-origem', null);
+    });
+
+    function usarLocalizacaoBusca() {
+      usarLocalizacao((lat, lng) => {
+        origemMarker.setLatLng([lat, lng]);
+        map.setView([lat, lng], 14);
+        reverseGeocode(lat, lng, 'input-origem', null);
+      });
+    }
+
+    let resultados = [];
+
+    async function buscarCaronas() {
+      const el = document.getElementById('buscando');
+      el.style.display = 'inline';
+      const destino = document.getElementById('input-destino').value.trim();
+      try {
+        const rota = '/caronas' + (destino ? '?destino=' + encodeURIComponent(destino) : '');
+        resultados = await api('GET', rota);
+      } catch (err) {
+        showToast(err.message, 'warning');
+        resultados = [];
+      } finally {
+        el.style.display = 'none';
+      }
+      aplicarFiltro();
+    }
+
+    function aplicarFiltro() {
+      const chipAtivo = document.querySelector('.filter-chip.active');
+      const filtro = chipAtivo ? chipAtivo.textContent.trim() : 'Todos';
+      let lista = resultados;
+      if (filtro.includes('4.5')) {
+        lista = lista.filter(c => c.motorista && Number(c.motorista.reputacao) >= 4.5);
+      } else if (filtro === 'Hoje') {
+        const hoje = new Date().toDateString();
+        lista = lista.filter(c => new Date(c.data_hora).toDateString() === hoje);
+      } else if (filtro === 'Vagas') {
+        lista = lista.filter(c => c.vagas_disp > 0);
+      }
+
+      const ordem = document.getElementById('ordenar').value;
+      lista = [...lista].sort((a, b) => {
+        if (ordem === 'avaliacao') return Number(b.motorista?.reputacao || 0) - Number(a.motorista?.reputacao || 0);
+        if (ordem === 'vagas')     return b.vagas_disp - a.vagas_disp;
+        return new Date(a.data_hora) - new Date(b.data_hora);
+      });
+
+      renderResultados(lista);
+      plotarCaronas(lista);
+    }
+
+    function renderResultados(lista) {
+      const container = document.querySelector('.results-list');
+      document.getElementById('results-count').textContent =
+        `${lista.length} carona${lista.length === 1 ? '' : 's'} encontrada${lista.length === 1 ? '' : 's'}`;
+
+      if (!lista.length) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="icon">🔍</div>
+            <h3>Nenhuma carona encontrada</h3>
+            <p>Tente buscar por outro destino ou volte mais tarde.</p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = lista.map(carona => {
+        const dt     = new Date(carona.data_hora);
+        const hora   = dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        const nome   = carona.motorista ? carona.motorista.nome : 'Motorista';
+        const rep    = carona.motorista ? Number(carona.motorista.reputacao).toFixed(1) : '–';
+        const inicio = escapeHtml(iniciais(nome));
+        const vagasBadge = carona.vagas_disp > 0
+          ? `<span class="ride-meta-item badge badge-green" style="margin-left:auto;">Disponível</span>`
+          : `<span class="ride-meta-item badge badge-gray" style="margin-left:auto;">Lotada</span>`;
+
+        return `
+          <a href="detalhes.html?id=${carona.id}" class="ride-card">
+            <div class="ride-card-header">
+              <div class="driver-info">
+                <div class="driver-avatar">${inicio}</div>
+                <div>
+                  <div class="driver-name">${escapeHtml(nome)}</div>
+                  <div class="driver-rating">⭐ ${rep}</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:1.1rem;font-weight:700;color:var(--primary);">${hora}</div>
+              </div>
+            </div>
+            <div class="ride-route">
+              <div class="route-point"><div class="route-dot origin"></div> ${escapeHtml(carona.origem)}</div>
+              <div class="route-line" style="margin-left:4px;"></div>
+              <div class="route-point"><div class="route-dot dest"></div> ${escapeHtml(carona.destino)}</div>
+            </div>
+            <div class="ride-meta">
+              <span class="ride-meta-item">🚗 ${escapeHtml(carona.veiculo || 'Veículo não informado')}</span>
+              <span class="ride-meta-item">👥 ${carona.vagas_disp} vaga${carona.vagas_disp === 1 ? '' : 's'}</span>
+              ${vagasBadge}
+            </div>
+          </a>`;
+      }).join('');
+    }
+
+    function limparBusca() {
+      document.getElementById('input-origem').value = '';
+      document.getElementById('input-destino').value = '';
+      buscarCaronas();
+    }
+
+    function toggleFilter(el) {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      aplicarFiltro();
+    }
+
+    document.getElementById('input-data').value = todayISO();
+    buscarCaronas();
+  </script>
+</body>
+</html>

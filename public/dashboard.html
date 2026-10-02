@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CaronaUni – Dashboard</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%9A%97%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .welcome-banner {
+      background: linear-gradient(135deg, #0b1522 0%, #12263c 55%, #0b3d24 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.75rem;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      position: relative;
+    }
+    .welcome-banner::after {
+      content: '🚗';
+      position: absolute;
+      right: 1.5rem;
+      font-size: 5rem;
+      opacity: .08;
+    }
+    .welcome-banner h2 { font-size: 1.25rem; margin-bottom: .3rem; }
+    .welcome-banner p  { font-size: .85rem; opacity: .8; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; }
+
+    .stat-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.25rem;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .stat-icon {
+      width: 46px; height: 46px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+    .stat-val { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+    .stat-lbl { font-size: .78rem; color: var(--text-light); font-weight: 500; }
+
+    .notif-item {
+      display: flex;
+      gap: .75rem;
+      align-items: flex-start;
+      padding: .75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--secondary); margin-top: 5px; flex-shrink: 0; }
+    .notif-dot.read { background: #3a424e; }
+    .notif-text { font-size: .85rem; color: var(--text); line-height: 1.4; }
+    .notif-time { font-size: .73rem; color: var(--text-light); margin-top: .2rem; }
+
+    .upcoming-ride {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: .85rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .upcoming-ride:last-child { border-bottom: none; }
+    .upcoming-time {
+      min-width: 54px;
+      text-align: center;
+      background: var(--accent);
+      border-radius: 8px;
+      padding: .4rem .3rem;
+    }
+    .upcoming-time .time { font-size: .95rem; font-weight: 700; color: var(--secondary-dk); }
+    .upcoming-time .day  { font-size: .65rem; color: var(--text-light); }
+    .upcoming-info { flex: 1; }
+    .upcoming-route { font-size: .88rem; font-weight: 600; }
+    .upcoming-driver { font-size: .78rem; color: var(--text-light); margin-top: .15rem; }
+
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <a href="dashboard.html" class="header-logo">🎓 <span>Carona</span>Uni</a>
+    <nav class="header-nav">
+      <a href="dashboard.html" class="active">🏠 Início</a>
+      <a href="buscar.html">🔍 Buscar Carona</a>
+      <a href="criar.html">➕ Oferecer</a>
+      <a href="solicitacoes.html">📋 Solicitações</a>
+      <a href="historico.html">📜 Histórico</a>
+    </nav>
+    <a href="perfil.html" class="header-user" style="text-decoration:none;">
+      <div class="avatar">·</div>
+      <span>Olá ▾</span>
+    </a>
+  </header>
+
+  <div class="page">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+      <div>
+        <h2>👋 Bom dia, <span id="welcome-nome">…</span>!</h2>
+        <p id="welcome-sub">Carregando suas caronas…</p>
+      </div>
+      <a href="buscar.html" class="btn btn-primary" style="white-space:nowrap;">Buscar Carona →</a>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid-3" style="margin-bottom:1.5rem;">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(0,200,83,.12);">🚗</div>
+        <div>
+          <div class="stat-val" id="stat-caronas">–</div>
+          <div class="stat-lbl">Caronas realizadas</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(91,157,255,.12);">⭐</div>
+        <div>
+          <div class="stat-val" id="stat-reputacao">–</div>
+          <div class="stat-lbl">Sua avaliação média</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(251,191,36,.12);">🌿</div>
+        <div>
+          <div class="stat-val" id="stat-co2">–</div>
+          <div class="stat-lbl">CO₂ economizado</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="grid-2" style="margin-bottom:1.5rem;">
+
+      <!-- Proximas -->
+      <div class="card">
+        <div class="card-title flex-between">
+          📅 Próximas Caronas
+          <a href="historico.html" class="btn btn-ghost btn-sm">Histórico</a>
+        </div>
+        <div id="proximas-lista"></div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="card">
+        <div class="card-title flex-between">
+          🔔 Notificações
+          <span class="badge badge-green" id="notif-count">–</span>
+        </div>
+
+        <div id="notif-lista"></div>
+
+        <div class="text-center mt-sm">
+          <a href="solicitacoes.html" class="text-sm color-secondary" style="text-decoration:none;">Ver solicitações →</a>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    exigirLogin();
+    document.getElementById('welcome-nome').textContent = getUsuario().nome.split(' ')[0];
+
+    function fmtDia(dt) {
+      const hoje = new Date();
+      const amanha = new Date();
+      amanha.setDate(hoje.getDate() + 1);
+      if (dt.toDateString() === hoje.toDateString())   return 'Hoje';
+      if (dt.toDateString() === amanha.toDateString()) return 'Amanhã';
+      return dt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    }
+
+    function renderProximas(itens) {
+      const container = document.getElementById('proximas-lista');
+      if (!itens.length) {
+        container.innerHTML = `
+          <div style="padding:1.5rem 0; text-align:center; color:var(--text-light); font-size:.85rem;">
+            Nenhuma carona agendada. Busque uma carona ou ofereça a sua.
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = itens.map(item => {
+        const c = item.carona;
+        const hora = item.dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        const motorista = item.tipo === 'motorista'
+          ? `🚗 Você (motorista) · ${c.vagas_total - c.vagas_disp} de ${c.vagas_total} vagas ocupadas`
+          : `🚗 ${escapeHtml(c.veiculo || 'Veículo não informado')} · 👥 Passageiro`;
+        const badge = item.tipo === 'motorista'
+          ? `<span class="badge badge-blue">Você oferece</span>`
+          : `<span class="badge badge-green">Confirmada</span>`;
+
+        return `
+          <div class="upcoming-ride">
+            <div class="upcoming-time">
+              <div class="time">${hora}</div>
+              <div class="day">${fmtDia(item.dt)}</div>
+            </div>
+            <div class="upcoming-info">
+              <div class="upcoming-route">${escapeHtml(c.origem)} → ${escapeHtml(c.destino)}</div>
+              <div class="upcoming-driver">${motorista}</div>
+            </div>
+            ${badge}
+          </div>`;
+      }).join('');
+    }
+
+    function renderNotificacoes(pendentes, aceitasComoPassageiro) {
+      const itens = [
+        ...pendentes.map(s => ({
+          texto: `<strong>${escapeHtml(s.passageiro ? s.passageiro.nome : 'Alguém')}</strong> solicitou uma vaga na sua carona ${escapeHtml(s.carona.origem)} → ${escapeHtml(s.carona.destino)}.`,
+          quando: new Date(s.createdAt),
+          lida: false,
+        })),
+        ...aceitasComoPassageiro.map(s => ({
+          texto: `Sua solicitação para <strong>${escapeHtml(s.carona.origem)} → ${escapeHtml(s.carona.destino)}</strong> foi aceita.`,
+          quando: new Date(s.updatedAt),
+          lida: true,
+        })),
+      ].sort((a, b) => b.quando - a.quando).slice(0, 5);
+
+      document.getElementById('notif-count').textContent = pendentes.length
+        ? `${pendentes.length} pendente${pendentes.length === 1 ? '' : 's'}`
+        : 'Sem pendências';
+
+      const container = document.getElementById('notif-lista');
+      if (!itens.length) {
+        container.innerHTML = `
+          <div style="padding:1.5rem 0; text-align:center; color:var(--text-light); font-size:.85rem;">
+            Nenhuma notificação por enquanto.
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = itens.map(n => `
+        <div class="notif-item">
+          <div class="notif-dot ${n.lida ? 'read' : ''}"></div>
+          <div>
+            <div class="notif-text">${n.texto}</div>
+            <div class="notif-time">${n.quando.toLocaleDateString('pt-BR')} às ${n.quando.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</div>
+          </div>
+        </div>`).join('');
+    }
+
+    (async () => {
+      try {
+        const [{ comoMotorista, comoPassageiro }, solicitacoes, eu] = await Promise.all([
+          api('GET', '/historico'),
+          api('GET', '/solicitacoes'),
+          api('GET', '/eu'),
+        ]);
+
+        // reputação vem da API, não do localStorage — senão fica velha até deslogar
+        salvarSessao(getToken(), eu);
+        preencherHeaderUsuario();
+
+        const totalCaronas = comoMotorista.length + comoPassageiro.length;
+        document.getElementById('stat-caronas').textContent = totalCaronas;
+        document.getElementById('stat-reputacao').textContent = Number(eu.reputacao).toFixed(1);
+        // CO2 é uma estimativa no front (não vem do banco): caronas × constante média por trajeto
+        const CO2_POR_CARONA_KG = 2;
+        document.getElementById('stat-co2').textContent = (totalCaronas * CO2_POR_CARONA_KG) + ' kg';
+
+        const agora = new Date();
+        const proximas = [
+          ...comoMotorista.map(c => ({ tipo: 'motorista', carona: c, dt: new Date(c.data_hora) })),
+          ...comoPassageiro.map(s => ({ tipo: 'passageiro', carona: s.carona, dt: new Date(s.carona.data_hora) })),
+        ].filter(i => i.dt >= agora).sort((a, b) => a.dt - b.dt);
+
+        const hoje = proximas.filter(i => i.dt.toDateString() === agora.toDateString());
+        document.getElementById('welcome-sub').innerHTML = hoje.length
+          ? `Você tem <strong>${hoje.length} carona${hoje.length === 1 ? '' : 's'}</strong> agendada${hoje.length === 1 ? '' : 's'} para hoje às ${hoje[0].dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}.`
+          : 'Você não tem caronas agendadas para hoje.';
+
+        renderProximas(proximas.slice(0, 5));
+        renderNotificacoes(
+          solicitacoes.filter(s => s.status === 'pendente'),
+          comoPassageiro,
+        );
+      } catch (err) {
+        showToast(err.message, 'warning');
+      }
+    })();
+  </script>
+</body>
+</html>

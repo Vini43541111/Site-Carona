@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CaronaUni – Histórico</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%9A%97%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .hist-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 1rem 1.25rem;
+      transition: border-color .15s;
+    }
+
+    .hist-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: .75rem;
+    }
+
+    .hist-date {
+      font-size: .75rem;
+      color: var(--text-light);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin: 1.25rem 0 .65rem;
+    }
+
+    .hist-person {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+
+    .hist-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: .85rem; font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .hist-actions {
+      display: flex;
+      gap: .5rem;
+      margin-top: .75rem;
+      padding-top: .75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .rating-inline {
+      display: flex;
+      gap: 2px;
+      font-size: .85rem;
+    }
+    .rating-inline .s { color: var(--warning); }
+    .rating-inline .s.off { color: #3a424e; }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 640px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+
+    .month-summary {
+      background: var(--accent);
+      border-radius: var(--radius-sm);
+      padding: .75rem 1rem;
+      font-size: .85rem;
+      color: var(--secondary-dk);
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="dashboard.html" class="header-logo">🎓 <span>Carona</span>Uni</a>
+    <nav class="header-nav">
+      <a href="dashboard.html">🏠 Início</a>
+      <a href="buscar.html">🔍 Buscar Carona</a>
+      <a href="criar.html">➕ Oferecer</a>
+      <a href="solicitacoes.html">📋 Solicitações</a>
+      <a href="historico.html" class="active">📜 Histórico</a>
+    </nav>
+    <a href="perfil.html" class="header-user" style="text-decoration:none;">
+      <div class="avatar">·</div>
+      <span>Olá ▾</span>
+    </a>
+  </header>
+
+  <div class="page">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+      <h1 style="font-size:1.3rem; color:var(--primary);">📜 Histórico de Caronas</h1>
+      <div style="display:flex; gap:.5rem;">
+        <select class="form-control" id="filtro-mes" style="width:auto;font-size:.82rem;padding:.35rem .7rem;" onchange="renderTudo()">
+          <option value="">Todos os meses</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="card" style="text-align:center;padding:1rem;">
+        <div style="font-size:1.75rem;font-weight:700;color:var(--primary);" id="stat-total">–</div>
+        <div style="font-size:.78rem;color:var(--text-light);">Caronas totais</div>
+      </div>
+      <div class="card" style="text-align:center;padding:1rem;">
+        <div style="font-size:1.75rem;font-weight:700;color:var(--secondary);" id="stat-passageiro">–</div>
+        <div style="font-size:.78rem;color:var(--text-light);">Como passageiro</div>
+      </div>
+      <div class="card" style="text-align:center;padding:1rem;">
+        <div style="font-size:1.75rem;font-weight:700;color:var(--primary);" id="stat-motorista">–</div>
+        <div style="font-size:.78rem;color:var(--text-light);">Como motorista</div>
+      </div>
+      <div class="card" style="text-align:center;padding:1rem;">
+        <div style="font-size:1.75rem;font-weight:700;color:var(--warning);" id="stat-co2">–</div>
+        <div style="font-size:.78rem;color:var(--text-light);">CO₂ economizado 🌿</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs" style="margin-bottom:1.25rem;">
+      <a class="tab active" onclick="showTab('todas',this)">📋 Todas</a>
+      <a class="tab" onclick="showTab('proximas',this)">📅 Próximas</a>
+      <a class="tab" onclick="showTab('passadas',this)">✅ Realizadas</a>
+      <a class="tab" onclick="showTab('pedidos',this)">📨 Meus Pedidos <span class="badge badge-orange" style="margin-left:.3rem;" id="badge-pedidos-count">–</span></a>
+      <a class="tab" onclick="showTab('pendente-aval',this)">⭐ Avaliar <span class="badge badge-orange" style="margin-left:.3rem;" id="badge-avaliar-count">–</span></a>
+    </div>
+
+    <!-- TODAS -->
+    <div id="tab-todas"></div>
+
+    <!-- PROXIMAS -->
+    <div id="tab-proximas" style="display:none;"></div>
+
+    <!-- PASSADAS -->
+    <div id="tab-passadas" style="display:none;"></div>
+
+    <!-- MEUS PEDIDOS -->
+    <div id="tab-pedidos" style="display:none;"></div>
+
+    <!-- AVALIAR -->
+    <div id="tab-pendente-aval" style="display:none;"></div>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    exigirLogin();
+
+    let caronasAvaliadas = new Set();
+    let meusPedidos = [];
+
+    const ROTULO_STATUS = {
+      pendente: '<span class="badge badge-orange">⏳ Aguardando resposta</span>',
+      aceito:   '<span class="badge badge-green">✅ Aceito</span>',
+      recusado: '<span class="badge badge-gray">❌ Recusado</span>',
+    };
+
+    function renderPedidos() {
+      const container = document.getElementById('tab-pedidos');
+      document.getElementById('badge-pedidos-count').textContent =
+        meusPedidos.filter(s => s.status === 'pendente').length;
+
+      if (!meusPedidos.length) {
+        container.innerHTML = `
+          <div class="empty-pending" style="text-align:center;padding:2rem;color:var(--text-light);">
+            Você ainda não pediu vaga em nenhuma carona.
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = `<div style="display:flex; flex-direction:column; gap:.75rem;">` +
+        meusPedidos.map(s => {
+          const c = s.carona;
+          const dt = new Date(c.data_hora);
+          const motorista = c.motorista ? c.motorista.nome : 'Motorista';
+          const cancelavel = s.status === 'pendente' || (s.status === 'aceito' && dt >= new Date());
+
+          return `
+            <div class="hist-card">
+              <div class="hist-header">
+                <div>
+                  <div class="fw-700">${escapeHtml(c.origem)} → ${escapeHtml(c.destino)}</div>
+                  <div style="font-size:.78rem; color:var(--text-light); margin-top:.2rem;">
+                    📅 ${dt.toLocaleDateString('pt-BR')} · ⏰ ${dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} · 🚗 ${escapeHtml(motorista)}
+                  </div>
+                </div>
+                ${ROTULO_STATUS[s.status] || ''}
+              </div>
+              ${s.mensagem ? `<div class="text-muted text-xs">💬 "${escapeHtml(s.mensagem)}"</div>` : ''}
+              <div class="hist-actions">
+                <a href="detalhes.html?id=${c.id}" class="btn btn-outline btn-sm">Ver carona</a>
+                ${cancelavel ? `<button class="btn btn-ghost btn-sm" onclick="desistir(${s.id})">Desistir</button>` : ''}
+              </div>
+            </div>`;
+        }).join('') + `</div>`;
+    }
+
+    async function desistir(id) {
+      if (!confirm('Cancelar seu pedido de vaga nesta carona?')) return;
+      try {
+        await api('DELETE', `/solicitacoes/${id}`);
+        showToast('Pedido cancelado.', 'success');
+        carregar();
+      } catch (err) {
+        showToast(err.message, 'warning');
+      }
+    }
+
+    function fmtItem(item) {
+      const c = item.carona;
+      const dataFmt = item.dt.toLocaleDateString('pt-BR');
+      const horaFmt = item.dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      const futura  = item.dt >= new Date();
+      const avaliada = caronasAvaliadas.has(c.id);
+
+      if (item.tipo === 'motorista') {
+        return `
+          <div class="hist-card" ${futura ? 'style="border-color:rgba(91,157,255,.45);"' : ''}>
+            <div class="hist-header">
+              <div>
+                <div class="fw-700">${escapeHtml(c.origem)} → ${escapeHtml(c.destino)}</div>
+                <div style="font-size:.78rem; color:var(--text-light); margin-top:.2rem;">📅 ${dataFmt} · ⏰ ${horaFmt}</div>
+              </div>
+              <span class="badge badge-blue">${futura ? 'Você oferece' : 'Concluída'}</span>
+            </div>
+            <div class="text-muted">🚗 ${escapeHtml(c.veiculo || 'Veículo não informado')} · 👤 Motorista</div>
+            <div class="hist-actions">
+              <a href="${futura ? 'solicitacoes.html' : 'detalhes.html?id=' + c.id}" class="btn btn-outline btn-sm">${futura ? 'Gerenciar' : 'Ver detalhes'}</a>
+            </div>
+          </div>`;
+      }
+
+      return `
+        <div class="hist-card" ${futura ? 'style="border-color:rgba(0,200,83,.45);"' : ''}>
+          <div class="hist-header">
+            <div>
+              <div class="fw-700">${escapeHtml(c.origem)} → ${escapeHtml(c.destino)}</div>
+              <div style="font-size:.78rem; color:var(--text-light); margin-top:.2rem;">📅 ${dataFmt} · ⏰ ${horaFmt}</div>
+            </div>
+            <span class="badge ${futura ? 'badge-green' : 'badge-gray'}">${futura ? 'Confirmada' : 'Concluída'}</span>
+          </div>
+          <div class="text-muted">🚗 ${escapeHtml(c.veiculo || 'Veículo não informado')} · 👥 Passageiro</div>
+          <div class="hist-actions">
+            <a href="detalhes.html?id=${c.id}" class="btn btn-outline btn-sm">Ver detalhes</a>
+            ${!futura && !avaliada ? `<a href="avaliacao.html?carona_id=${c.id}&avaliado_id=${c.motorista_id}" class="btn btn-primary btn-sm">⭐ Avaliar agora</a>` : ''}
+            ${!futura && avaliada ? `<span class="badge badge-green">✅ Avaliado</span>` : ''}
+          </div>
+        </div>`;
+    }
+
+    function renderLista(id, itens, vazioTexto) {
+      const container = document.getElementById(id);
+      if (!itens.length) {
+        container.innerHTML = `
+          <div class="empty-pending" style="text-align:center;padding:2rem;color:var(--text-light);">
+            ${vazioTexto}
+          </div>`;
+        return;
+      }
+      container.innerHTML = `<div style="display:flex; flex-direction:column; gap:.75rem;">` +
+        itens.map(fmtItem).join('') + `</div>`;
+    }
+
+    let todosItens = [];
+
+    function chaveMes(dt) {
+      return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    function montarFiltroMes() {
+      const select = document.getElementById('filtro-mes');
+      const meses = [...new Set(todosItens.map(i => chaveMes(i.dt)))].sort().reverse();
+
+      select.innerHTML = '<option value="">Todos os meses</option>' + meses.map(chave => {
+        const [ano, mes] = chave.split('-');
+        const rotulo = new Date(Number(ano), Number(mes) - 1)
+          .toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+        return `<option value="${chave}">${rotulo.charAt(0).toUpperCase() + rotulo.slice(1)}</option>`;
+      }).join('');
+    }
+
+    function renderTudo() {
+      const mes = document.getElementById('filtro-mes').value;
+      const itens = mes ? todosItens.filter(i => chaveMes(i.dt) === mes) : todosItens;
+
+      const agora            = new Date();
+      const motoristaItens   = itens.filter(i => i.tipo === 'motorista');
+      const passageiroItens  = itens.filter(i => i.tipo === 'passageiro');
+      const proximas         = itens.filter(i => i.dt >= agora);
+      const passadas         = itens.filter(i => i.dt < agora);
+      const aAvaliar         = passageiroItens.filter(i => i.dt < agora && !caronasAvaliadas.has(i.carona.id));
+
+      document.getElementById('stat-total').textContent      = itens.length;
+      document.getElementById('stat-passageiro').textContent = passageiroItens.length;
+      document.getElementById('stat-motorista').textContent  = motoristaItens.length;
+      // CO2 é uma estimativa no front (não vem do banco): caronas × constante média por trajeto
+      const CO2_POR_CARONA_KG = 2;
+      document.getElementById('stat-co2').textContent = (itens.length * CO2_POR_CARONA_KG) + ' kg';
+      document.getElementById('badge-avaliar-count').textContent = aAvaliar.length;
+
+      renderLista('tab-todas', itens, 'Nenhuma carona neste período.');
+      renderLista('tab-proximas', proximas, 'Nenhuma carona agendada.');
+      renderLista('tab-passadas', passadas, 'Nenhuma carona realizada ainda.');
+      renderLista('tab-pendente-aval', aAvaliar, 'Nenhuma avaliação pendente.');
+    }
+
+    async function carregar() {
+      let comoMotorista = [], comoPassageiro = [];
+      try {
+        const [historico, minhasAvaliacoes, pedidos] = await Promise.all([
+          api('GET', '/historico'),
+          api('GET', `/avaliacoes?avaliador_id=${getUsuario().id}`),
+          api('GET', '/minhas-solicitacoes'),
+        ]);
+        ({ comoMotorista, comoPassageiro } = historico);
+        caronasAvaliadas = new Set(minhasAvaliacoes.map(a => a.carona_id));
+        meusPedidos = pedidos;
+      } catch (err) {
+        showToast(err.message, 'warning');
+      }
+
+      todosItens = [
+        ...comoMotorista.map(c => ({ tipo: 'motorista', carona: c, dt: new Date(c.data_hora) })),
+        ...comoPassageiro.map(s => ({ tipo: 'passageiro', carona: s.carona, dt: new Date(s.carona.data_hora) })),
+      ].sort((a, b) => b.dt - a.dt);
+
+      montarFiltroMes();
+      renderTudo();
+      renderPedidos();
+    }
+
+    carregar();
+  </script>
+</body>
+</html>

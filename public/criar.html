@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CaronaUni – Oferecer Carona</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%9A%97%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
@@ -24,8 +25,8 @@
     .vagas-btn {
       width: 38px; height: 38px;
       border-radius: 50%;
-      border: 2px solid var(--secondary);
-      background: #fff;
+      border: 1.5px solid var(--secondary);
+      background: transparent;
       font-size: 1.2rem;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
@@ -34,23 +35,44 @@
       transition: all .15s;
     }
     .vagas-btn:hover { background: var(--accent); }
-    .vagas-num { font-size: 1.5rem; font-weight: 700; color: var(--primary); min-width: 30px; text-align: center; }
+    .vagas-num { font-size: 1.5rem; font-weight: 700; color: var(--text); min-width: 30px; text-align: center; }
 
     .recorrencia-opts { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .5rem; }
     .day-btn {
       width: 36px; height: 36px;
       border-radius: 50%;
       border: 1.5px solid var(--border);
-      background: #fff;
+      background: var(--surface-2);
+      color: var(--text-light);
       font-size: .75rem;
       font-weight: 700;
       cursor: pointer;
       transition: all .15s;
     }
-    .day-btn.on { background: var(--secondary); border-color: var(--secondary); color: #fff; }
+    .day-btn.on { background: var(--secondary); border-color: var(--secondary); color: #04140b; }
+
+    .modo-btn {
+      flex: 1;
+      padding: .5rem .7rem;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-light);
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .modo-btn:hover { border-color: var(--text-light); color: var(--text); }
+    .modo-btn.ativo {
+      background: var(--accent);
+      border-color: var(--secondary);
+      color: var(--secondary);
+    }
 
     .preview-card {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%);
+      background: linear-gradient(135deg, #0b1522 0%, #12263c 100%);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 1.25rem;
       color: #fff;
@@ -77,12 +99,11 @@
       <a href="criar.html" class="active">➕ Oferecer</a>
       <a href="solicitacoes.html">📋 Solicitações</a>
       <a href="historico.html">📜 Histórico</a>
-      <a href="documentacao.html">📄 Docs</a>
     </nav>
-    <div class="header-user">
-      <div class="avatar">V</div>
-      <span>Olá, Vinicius ▾</span>
-    </div>
+    <a href="perfil.html" class="header-user" style="text-decoration:none;">
+      <div class="avatar">·</div>
+      <span>Olá ▾</span>
+    </a>
   </header>
 
   <div class="page">
@@ -117,20 +138,20 @@
           <div class="form-group">
             <label class="form-label">Ponto de Origem</label>
             <div style="position:relative;">
-              <input type="text" id="f-origem" class="form-control" placeholder="Clique no mapa ou digite..." oninput="updatePreview()" />
-              <button type="button" onclick="usarLocalizacaoCriar()" style="position:absolute;right:.5rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;" title="Usar minha localização">📌</button>
+              <input type="text" id="f-origem" class="form-control" placeholder="Clique no mapa ou digite..." oninput="updatePreview()" onchange="geocodarCampo('f-origem','origem')" />
+              <button type="button" onclick="usarLocalizacaoCriar()" aria-label="Usar minha localização" style="position:absolute;right:.5rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;" title="Usar minha localização">📌</button>
             </div>
             <div style="font-size:.75rem; color:var(--text-light); margin-top:.3rem;">💡 Clique no mapa para definir o ponto de partida</div>
           </div>
 
           <div class="form-group">
             <label class="form-label">Ponto de Destino</label>
-            <input type="text" id="f-destino" class="form-control" placeholder="Ex.: Campus Unoesc – Portaria Principal" value="Campus Unoesc – Portaria Principal" oninput="updatePreview()" />
+            <input type="text" id="f-destino" class="form-control" placeholder="Ex.: Campus Unoesc – Portaria Principal" oninput="updatePreview()" onchange="geocodarCampo('f-destino','destino')" />
           </div>
 
-          <div class="form-group">
+          <div class="form-group" style="margin-bottom:0;">
             <label class="form-label">Paradas intermediárias</label>
-            <input type="text" class="form-control" placeholder="Ex.: Terminal Central (opcional)" />
+            <input type="text" id="f-paradas" class="form-control" placeholder="Ex.: Terminal Central (opcional)" />
           </div>
         </div>
 
@@ -180,37 +201,32 @@
             </div>
           </div>
 
-          <div class="form-row form-row-2">
-            <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label">Veículo</label>
-              <select class="form-control">
-                <option>🚗 Gol 2018 – Preto</option>
-                <option>🚗 Fiat Uno – Prata</option>
-                <option>+ Adicionar veículo</option>
-              </select>
-            </div>
-            <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label">Placa (opcional)</label>
-              <input type="text" class="form-control" placeholder="ABC-1234" />
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Veículo</label>
+            <select class="form-control" id="f-veiculo">
+              <option value="">Carregando veículos…</option>
+            </select>
+            <div style="font-size:.75rem; color:var(--text-light); margin-top:.3rem;">
+              Cadastre seus veículos em <a href="perfil.html" style="color:var(--secondary);">Meu Perfil</a>.
             </div>
           </div>
         </div>
 
         <div class="card" class="mt-1">
-          <div class="card-title">📝 Preferências (opcional)</div>
+          <div class="card-title">📝 Preferências</div>
           <div class="form-group">
             <label class="form-label">Observação para passageiros</label>
-            <textarea class="form-control" rows="2" placeholder="Ex.: Saio pontualmente, não aceito pets, carro com ar-condicionado."></textarea>
+            <textarea class="form-control" id="f-observacao" rows="2" placeholder="Ex.: Saio pontualmente, não aceito pets."></textarea>
           </div>
-          <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+          <div style="display:flex; gap:1.25rem; flex-wrap:wrap;">
             <label style="display:flex; align-items:center; gap:.4rem; font-size:.85rem; cursor:pointer;">
-              <input type="checkbox" checked style="accent-color:var(--secondary);" /> 🎵 Aceita música
+              <input type="checkbox" id="f-musica" checked /> 🎵 Música
             </label>
             <label style="display:flex; align-items:center; gap:.4rem; font-size:.85rem; cursor:pointer;">
-              <input type="checkbox" style="accent-color:var(--secondary);" /> 🐾 Aceita pets
+              <input type="checkbox" id="f-pets" /> 🐾 Pets
             </label>
             <label style="display:flex; align-items:center; gap:.4rem; font-size:.85rem; cursor:pointer;">
-              <input type="checkbox" checked style="accent-color:var(--secondary);" /> ❄️ Ar-condicionado
+              <input type="checkbox" id="f-ar" checked /> ❄️ Ar-condicionado
             </label>
           </div>
         </div>
@@ -225,13 +241,15 @@
       <!-- Map -->
       <div class="map-sticky">
         <div class="card" style="padding:.7rem; margin-bottom:.75rem;">
-          <div class="text-muted">
-            🟢 <b>Clique</b> para definir <b>origem</b> · 🔴 Duplo clique para definir <b>destino</b>
+          <div style="display:flex; gap:.5rem; margin-bottom:.5rem;">
+            <button type="button" class="modo-btn ativo" id="modo-origem" onclick="definirModo('origem')">🟢 Definir origem</button>
+            <button type="button" class="modo-btn" id="modo-destino" onclick="definirModo('destino')">🔴 Definir destino</button>
           </div>
+          <div class="text-muted" id="dica-mapa">Clique no mapa para posicionar a origem — ou arraste os pinos.</div>
         </div>
         <div id="map"></div>
         <div class="card" style="padding:.7rem; margin-top:.75rem; font-size:.78rem; color:var(--text-light);">
-          🗺 Mapa baseado em OpenStreetMap. A rota é uma estimativa visual.
+          <span id="info-rota">🗺 Defina origem e destino para calcular o trajeto.</span>
         </div>
       </div>
 
@@ -254,68 +272,120 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/api.js"></script>
   <script src="js/app.js"></script>
   <script>
+    exigirLogin();
     const map = L.map('map').setView(MAP_CENTER, MAP_ZOOM);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap', maxZoom: 19,
     }).addTo(map);
 
-    let origemMarker = null, destinoMarker = null, routeLine = null;
+    // sem duplo clique: o Leaflet dispara 'click' no primeiro toque de um duplo
+    // clique, então marcar o destino acabava arrastando a origem junto
+    map.doubleClickZoom.disable();
+
     let vagas = 2;
+    let routeLine = null;
+    let modoAtual = 'origem';
+    let ultimaRota = null; // { distanciaKm, duracaoMin }
 
     const greenIcon = createPinIcon('#00a651');
     const redIcon   = createPinIcon('#e53935');
 
-    // Default destination: Campus Unoesc
-    destinoMarker = L.marker(MAP_CENTER, { icon: redIcon })
+    // os dois pinos existem desde o início e são sempre arrastáveis
+    const origemMarker = L.marker(MAP_CENTER, { icon: greenIcon, draggable: true, opacity: .45 })
       .addTo(map)
-      .bindPopup('🏫 Campus Unoesc');
+      .bindPopup('📍 Origem<br><small>Arraste ou clique no mapa</small>');
 
-    map.on('click', function(e) {
-      if(!origemMarker) {
-        origemMarker = L.marker(e.latlng, { icon: greenIcon, draggable: true })
-          .addTo(map)
-          .bindPopup('📍 Sua origem<br><small>Arraste para ajustar</small>');
-        origemMarker.on('dragend', () => updateRoute());
-      } else {
-        origemMarker.setLatLng(e.latlng);
-      }
-      reverseGeocode(e.latlng.lat, e.latlng.lng, 'f-origem', 'prev-origem');
-      updateRoute();
+    const destinoMarker = L.marker(CAMPUS_UNOESC, { icon: redIcon, draggable: true })
+      .addTo(map)
+      .bindPopup('🏁 Destino');
+
+    let origemDefinida = false;
+
+    function definirModo(modo) {
+      modoAtual = modo;
+      document.getElementById('modo-origem').classList.toggle('ativo', modo === 'origem');
+      document.getElementById('modo-destino').classList.toggle('ativo', modo === 'destino');
+      document.getElementById('dica-mapa').textContent =
+        `Clique no mapa para posicionar ${modo === 'origem' ? 'a origem' : 'o destino'} — ou arraste os pinos.`;
+    }
+
+    function moverOrigem(latlng, comGeocode = true) {
+      origemMarker.setLatLng(latlng).setOpacity(1);
+      origemDefinida = true;
+      if (comGeocode) reverseGeocode(latlng.lat, latlng.lng, 'f-origem', 'prev-origem');
+      atualizarRota();
+    }
+
+    function moverDestino(latlng, comGeocode = true) {
+      destinoMarker.setLatLng(latlng);
+      if (comGeocode) reverseGeocode(latlng.lat, latlng.lng, 'f-destino', 'prev-destino');
+      atualizarRota();
+    }
+
+    map.on('click', e => {
+      if (modoAtual === 'origem') moverOrigem(e.latlng);
+      else                        moverDestino(e.latlng);
     });
 
-    map.on('dblclick', function(e) {
-      if(destinoMarker) destinoMarker.remove();
-      destinoMarker = L.marker(e.latlng, { icon: redIcon }).addTo(map).bindPopup('🏁 Seu destino');
-      reverseGeocode(e.latlng.lat, e.latlng.lng, 'f-destino', 'prev-destino');
-      updateRoute();
-      return false;
-    });
+    // arrastar agora sincroniza o campo de endereço (antes só redesenhava a linha)
+    origemMarker.on('dragend',  e => moverOrigem(e.target.getLatLng()));
+    destinoMarker.on('dragend', e => moverDestino(e.target.getLatLng()));
 
-    function updateRoute() {
-      if(!origemMarker || !destinoMarker) return;
-      if(routeLine) routeLine.remove();
+    async function atualizarRota() {
+      if (!origemDefinida) return;
+
       const o = origemMarker.getLatLng();
       const d = destinoMarker.getLatLng();
-      routeLine = L.polyline([o, d], { color: '#00a651', weight: 4, opacity: .7, dashArray: '8,5' }).addTo(map);
+      const info = document.getElementById('info-rota');
+
+      if (routeLine) routeLine.remove();
+
+      // linha reta na hora, pra tela responder imediato
+      routeLine = L.polyline([o, d], { color: '#00c853', weight: 4, opacity: .5, dashArray: '8,5' }).addTo(map);
       map.fitBounds(routeLine.getBounds(), { padding: [40, 40] });
+      info.textContent = '🗺 Calculando trajeto...';
+
+      const rota = await calcularRota([o.lat, o.lng], [d.lat, d.lng]);
+
+      // o usuário pode ter movido o pino enquanto o OSRM respondia
+      const aindaVale = origemMarker.getLatLng().equals(o) && destinoMarker.getLatLng().equals(d);
+      if (!aindaVale) return;
+
+      if (!rota) {
+        ultimaRota = null;
+        info.textContent = '🗺 Trajeto aproximado (rota real indisponível agora).';
+        return;
+      }
+
+      ultimaRota = rota;
+      routeLine.remove();
+      routeLine = L.polyline(rota.coords, { color: '#00c853', weight: 5, opacity: .85 }).addTo(map);
+      map.fitBounds(routeLine.getBounds(), { padding: [40, 40] });
+      info.textContent = `🚗 ${rota.distanciaKm} km · ⏱ ~${rota.duracaoMin} min pelo trajeto de carro`;
     }
 
     function usarLocalizacaoCriar() {
       usarLocalizacao((lat, lng) => {
         const ll = L.latLng(lat, lng);
-        if (!origemMarker) {
-          origemMarker = L.marker(ll, { icon: greenIcon, draggable: true }).addTo(map)
-            .bindPopup('📍 Sua localização');
-          origemMarker.on('dragend', () => updateRoute());
-        } else {
-          origemMarker.setLatLng(ll);
-        }
+        moverOrigem(ll);
         map.setView(ll, 15);
-        reverseGeocode(lat, lng, 'f-origem', 'prev-origem');
-        updateRoute();
       });
+    }
+
+    /* digitou o endereço e saiu do campo: posiciona o pino */
+    async function geocodarCampo(inputId, qual) {
+      const valor = document.getElementById(inputId).value.trim();
+      if (!valor) return;
+      const coord = await geocodeEndereco(valor + ', Chapecó, SC');
+      if (!coord) return;
+
+      const ll = L.latLng(coord[0], coord[1]);
+      if (qual === 'origem') moverOrigem(ll, false);
+      else                   moverDestino(ll, false);
+      map.setView(ll, 15);
     }
 
     function changeVagas(delta) {
@@ -331,6 +401,29 @@
 
     function toggleDay(el) { el.classList.toggle('on'); }
 
+    function diasSelecionados() {
+      if (!document.getElementById('f-recorrente').checked) return '';
+      return Array.from(document.querySelectorAll('.day-btn.on')).map(b => b.textContent.trim()).join(',');
+    }
+
+    async function carregarVeiculos() {
+      const select = document.getElementById('f-veiculo');
+      try {
+        const veiculos = await api('GET', '/veiculos');
+        if (!veiculos.length) {
+          select.innerHTML = '<option value="">Nenhum veículo cadastrado</option>';
+          return;
+        }
+        select.innerHTML = veiculos.map(v => {
+          const rotulo = [v.modelo, v.cor].filter(Boolean).join(' – ');
+          return `<option value="${escapeHtml(rotulo)}" ${v.principal ? 'selected' : ''}>🚗 ${escapeHtml(rotulo)}</option>`;
+        }).join('');
+      } catch (err) {
+        select.innerHTML = '<option value="">Erro ao carregar veículos</option>';
+        showToast(err.message, 'warning');
+      }
+    }
+
     function updatePreview() {
       const o = document.getElementById('f-origem').value;
       const d = document.getElementById('f-destino').value;
@@ -345,10 +438,55 @@
       }
     }
 
-    function publicarCarona() { openModal('modal-sucesso'); }
+    async function publicarCarona() {
+      const origem  = document.getElementById('f-origem').value.trim();
+      const destino = document.getElementById('f-destino').value.trim();
+      const data    = document.getElementById('f-data').value;
+      const hora    = document.getElementById('f-hora').value;
+
+      if (!origem || !destino || !data || !hora) {
+        showToast('Preencha origem, destino, data e horário.', 'warning');
+        return;
+      }
+
+      if (!origemDefinida) {
+        showToast('Marque o ponto de origem no mapa.', 'warning');
+        return;
+      }
+
+      const o = origemMarker.getLatLng();
+      const d = destinoMarker.getLatLng();
+
+      try {
+        await api('POST', '/caronas', {
+          origem, destino,
+          data_hora: new Date(`${data}T${hora}`).toISOString(),
+          vagas_total: vagas,
+          veiculo:     document.getElementById('f-veiculo').value || null,
+          observacao:  document.getElementById('f-observacao').value.trim(),
+          paradas:     document.getElementById('f-paradas').value.trim(),
+          dias_semana: diasSelecionados(),
+          aceita_musica: document.getElementById('f-musica').checked,
+          aceita_pets:   document.getElementById('f-pets').checked,
+          tem_ar:        document.getElementById('f-ar').checked,
+          // guardadas agora para a busca e os detalhes não precisarem geocodificar
+          origem_lat: o.lat,  origem_lng: o.lng,
+          destino_lat: d.lat, destino_lng: d.lng,
+          distancia_km: ultimaRota ? ultimaRota.distanciaKm : null,
+          duracao_min:  ultimaRota ? ultimaRota.duracaoMin : null,
+        });
+        openModal('modal-sucesso');
+      } catch (err) {
+        showToast(err.message, 'warning');
+      }
+    }
 
     document.getElementById('f-data').value = todayDateISO();
+    document.getElementById('f-data').min   = todayDateISO(); // não dá pra publicar carona no passado
+    document.getElementById('f-destino').value = CAMPUS_NOME; // destino padrão, casando com o pino
+    definirModo('origem');
     updatePreview();
+    carregarVeiculos();
   </script>
 </body>
 </html>

@@ -3,8 +3,14 @@
  */
 
 /* ───── CONFIGURAÇÃO DO MAPA ───── */
-const MAP_CENTER = [-27.0954, -52.6150]; // Unoesc Chapecó
-const MAP_ZOOM   = 13;
+
+/** Campus Unoesc Chapecó — destino padrão das caronas */
+const CAMPUS_UNOESC = [-27.1344867, -52.5993719];
+const CAMPUS_NOME   = 'Campus Unoesc – Portaria Principal';
+
+/** Centro inicial do mapa: o campus, já que é o destino da maioria das caronas */
+const MAP_CENTER = CAMPUS_UNOESC;
+const MAP_ZOOM   = 14;
 
 /** Ícone de pino colorido para Leaflet */
 function createPinIcon(color) {
@@ -16,15 +22,85 @@ function createPinIcon(color) {
   });
 }
 
-/** Geocodificação reversa via Nominatim */
+/* ───── GEOCODIFICAÇÃO (Nominatim) ─────
+   A política de uso pede no máximo 1 requisição por segundo. Arrastar um pino
+   dispara muitos eventos, então tudo passa por uma fila com intervalo mínimo. */
+const NOMINATIM_INTERVALO_MS = 1100;
+let _ultimaChamadaNominatim = 0;
+
+async function _chamarNominatim(url) {
+  const espera = Math.max(0, NOMINATIM_INTERVALO_MS - (Date.now() - _ultimaChamadaNominatim));
+  if (espera) await new Promise(r => setTimeout(r, espera));
+  _ultimaChamadaNominatim = Date.now();
+
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Nominatim indisponível');
+  return res.json();
+}
+
+/** Geocodificação reversa: lat/lng → endereço. Só a última chamada vale. */
+let _tokenReverse = 0;
 async function reverseGeocode(lat, lng, inputId, previewId) {
+  const meuToken = ++_tokenReverse;
   try {
-    const res  = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
-    const data = await res.json();
-    const addr = data.display_name.split(',').slice(0, 2).join(',').trim();
-    if (inputId)   document.getElementById(inputId).value       = addr;
+    const data = await _chamarNominatim(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+    );
+    // enquanto esperava, o usuário mexeu de novo: descarta este resultado
+    if (meuToken !== _tokenReverse) return;
+
+    const addr = (data.display_name || '').split(',').slice(0, 2).join(',').trim();
+    if (!addr) return;
+    if (inputId)   document.getElementById(inputId).value        = addr;
     if (previewId) document.getElementById(previewId).textContent = addr;
-  } catch (_) { /* silencia erros de rede */ }
+  } catch (_) { /* silencia: o pino continua válido mesmo sem o endereço */ }
+}
+
+/** Geocodificação direta: endereço → [lat, lng], ou null */
+async function geocodeEndereco(consulta) {
+  if (!consulta || !consulta.trim()) return null;
+  try {
+    const data = await _chamarNominatim(
+      `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(consulta)}`
+    );
+    if (!data.length) return null;
+    return [Number(data[0].lat), Number(data[0].lon)];
+  } catch (_) {
+    return null;
+  }
+}
+
+/* ───── ROTA REAL (OSRM) ───── */
+
+/**
+ * Traça a rota pelas ruas entre dois pontos.
+ * @returns {Promise<{coords: Array, distanciaKm: number, duracaoMin: number}|null>}
+ *          null quando o serviço falha — quem chama desenha a linha reta.
+ */
+async function calcularRota(origem, destino) {
+  const url = `https://router.project-osrm.org/route/v1/driving/`
+    + `${origem[1]},${origem[0]};${destino[1]},${destino[0]}`
+    + `?overview=full&geometries=geojson`;
+
+  try {
+    const controle = new AbortController();
+    const limite = setTimeout(() => controle.abort(), 6000); // não trava a tela
+    const res = await fetch(url, { signal: controle.signal });
+    clearTimeout(limite);
+
+    if (!res.ok) return null;
+    const data = await res.json();
+    const rota = data.routes && data.routes[0];
+    if (!rota) return null;
+
+    return {
+      coords: rota.geometry.coordinates.map(([lng, lat]) => [lat, lng]),
+      distanciaKm: Number((rota.distance / 1000).toFixed(2)),
+      duracaoMin: Math.round(rota.duration / 60),
+    };
+  } catch (_) {
+    return null;
+  }
 }
 
 /** Geolocalização do dispositivo */

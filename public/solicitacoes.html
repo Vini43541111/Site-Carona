@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CaronaUni – Solicitações</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%9A%97%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .solicitation-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 1.1rem 1.25rem;
+      transition: border-color .2s;
+    }
+    .solicitation-card:hover { border-color: #aaa; }
+
+    .passenger-header {
+      display: flex;
+      align-items: center;
+      gap: .85rem;
+      margin-bottom: .85rem;
+    }
+    .pass-avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .action-btns {
+      display: flex;
+      gap: .65rem;
+      margin-top: .85rem;
+      padding-top: .85rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .sol-meta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: .8rem;
+      color: var(--text-light);
+      margin-top: .5rem;
+    }
+
+    .carona-section {
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: .75rem 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .carona-section-info { font-size: .88rem; font-weight: 600; color: var(--primary); }
+    .carona-section-sub  { font-size: .78rem; color: var(--text-light); margin-top: .2rem; }
+
+    .tabs-container { margin-bottom: 1.25rem; }
+
+    .empty-pending {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-light);
+      background: var(--surface-2);
+      border-radius: var(--radius);
+      border: 1.5px dashed var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="dashboard.html" class="header-logo">🎓 <span>Carona</span>Uni</a>
+    <nav class="header-nav">
+      <a href="dashboard.html">🏠 Início</a>
+      <a href="buscar.html">🔍 Buscar Carona</a>
+      <a href="criar.html">➕ Oferecer</a>
+      <a href="solicitacoes.html" class="active">📋 Solicitações</a>
+      <a href="historico.html">📜 Histórico</a>
+    </nav>
+    <a href="perfil.html" class="header-user" style="text-decoration:none;">
+      <div class="avatar">·</div>
+      <span>Olá ▾</span>
+    </a>
+  </header>
+
+  <div class="page">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+      <h1 style="font-size:1.3rem; color:var(--primary);">📋 Gerenciar Solicitações</h1>
+      <a href="criar.html" class="btn btn-primary btn-sm">+ Nova Carona</a>
+    </div>
+
+    <!-- My Rides Summary -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-bottom:1.5rem;">
+      <div class="stat-card" style="background:var(--surface);border-radius:var(--radius);padding:1rem 1.25rem;border:1px solid var(--border);display:flex;align-items:center;gap:1rem;">
+        <div style="font-size:1.75rem;">⏳</div>
+        <div><div style="font-size:1.5rem;font-weight:700;color:var(--primary);" id="stat-pendentes">–</div><div style="font-size:.78rem;color:var(--text-light);">Pendentes</div></div>
+      </div>
+      <div class="stat-card" style="background:var(--surface);border-radius:var(--radius);padding:1rem 1.25rem;border:1px solid var(--border);display:flex;align-items:center;gap:1rem;">
+        <div style="font-size:1.75rem;">✅</div>
+        <div><div style="font-size:1.5rem;font-weight:700;color:var(--secondary);" id="stat-aceitas">–</div><div style="font-size:.78rem;color:var(--text-light);">Aceitas</div></div>
+      </div>
+      <div class="stat-card" style="background:var(--surface);border-radius:var(--radius);padding:1rem 1.25rem;border:1px solid var(--border);display:flex;align-items:center;gap:1rem;">
+        <div style="font-size:1.75rem;">🚗</div>
+        <div><div style="font-size:1.5rem;font-weight:700;color:var(--primary);" id="stat-caronas-ativas">–</div><div style="font-size:.78rem;color:var(--text-light);">Caronas ativas</div></div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs tabs-container">
+      <a class="tab active" onclick="showTab('pendentes',this)">⏳ Pendentes <span class="badge badge-orange" style="margin-left:.3rem;" id="badge-pendentes-count">–</span></a>
+      <a class="tab" onclick="showTab('aceitas',this)">✅ Aceitas</a>
+      <a class="tab" onclick="showTab('recusadas',this)">❌ Recusadas</a>
+      <a class="tab" onclick="showTab('minhas',this)">🚗 Minhas Caronas</a>
+    </div>
+
+    <!-- PENDENTES -->
+    <div id="tab-pendentes"></div>
+
+    <!-- ACEITAS -->
+    <div id="tab-aceitas" style="display:none;"></div>
+
+    <!-- RECUSADAS -->
+    <div id="tab-recusadas" style="display:none;"></div>
+
+    <!-- MINHAS CARONAS -->
+    <div id="tab-minhas" style="display:none;"></div>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    exigirLogin();
+
+    let solicitacoesTodas = [];
+    let minhasCaronas = [];
+    let passageirosAvaliados = new Set(); // "caronaId-passageiroId" que eu já avaliei
+
+    function fmtDataHora(iso) {
+      const dt = new Date(iso);
+      return `${dt.toLocaleDateString('pt-BR')} · ${dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+    }
+
+    async function carregarSolicitacoes() {
+      try {
+        const [lista, historico, minhasAvaliacoes] = await Promise.all([
+          api('GET', '/solicitacoes'),
+          api('GET', '/historico'),
+          api('GET', `/avaliacoes?avaliador_id=${getUsuario().id}`),
+        ]);
+        solicitacoesTodas = lista;
+        minhasCaronas = historico.comoMotorista;
+        passageirosAvaliados = new Set(minhasAvaliacoes.map(a => `${a.carona_id}-${a.avaliado_id}`));
+      } catch (err) {
+        showToast(err.message, 'warning');
+        solicitacoesTodas = [];
+        minhasCaronas = [];
+      }
+      renderResumo();
+      renderPendentes();
+      renderSimples('aceitas', 'aceito');
+      renderSimples('recusadas', 'recusado');
+      renderMinhasCaronas();
+    }
+
+    function renderResumo() {
+      document.getElementById('stat-pendentes').textContent =
+        solicitacoesTodas.filter(s => s.status === 'pendente').length;
+      document.getElementById('stat-aceitas').textContent =
+        solicitacoesTodas.filter(s => s.status === 'aceito').length;
+      document.getElementById('stat-caronas-ativas').textContent =
+        minhasCaronas.filter(c => c.status === 'ativa').length;
+    }
+
+    function renderMinhasCaronas() {
+      const container = document.getElementById('tab-minhas');
+
+      if (!minhasCaronas.length) {
+        container.innerHTML = `
+          <div class="empty-pending">
+            <div style="font-size:2.5rem; margin-bottom:.5rem;">🚗</div>
+            <div style="font-weight:600; margin-bottom:.25rem;">Você ainda não ofereceu nenhuma carona</div>
+            <div style="font-size:.82rem;">Publique uma carona para começar a receber solicitações.</div>
+          </div>`;
+        return;
+      }
+
+      const ordenadas = [...minhasCaronas].sort((a, b) => new Date(b.data_hora) - new Date(a.data_hora));
+
+      container.innerHTML = `<div style="display:flex; flex-direction:column; gap:.85rem;">` +
+        ordenadas.map(c => {
+          const pendentes = solicitacoesTodas.filter(s => s.carona.id === c.id && s.status === 'pendente').length;
+          const ocupadas  = c.vagas_total - c.vagas_disp;
+          const futura    = new Date(c.data_hora) >= new Date();
+          const badge = c.status !== 'ativa'
+            ? `<span class="badge badge-gray">${escapeHtml(c.status)}</span>`
+            : (futura ? `<span class="badge badge-green">Ativa</span>` : `<span class="badge badge-gray">Concluída</span>`);
+
+          return `
+            <div class="solicitation-card">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:.7rem;">
+                <div>
+                  <div style="font-weight:700; color:var(--primary);">${escapeHtml(c.origem)} → ${escapeHtml(c.destino)}</div>
+                  <div style="font-size:.78rem; color:var(--text-light); margin-top:.2rem;">📅 ${fmtDataHora(c.data_hora)} · 🚗 ${escapeHtml(c.veiculo || 'Veículo não informado')}</div>
+                </div>
+                ${badge}
+              </div>
+              <div class="text-muted">👥 ${ocupadas}/${c.vagas_total} passageiros · ⏳ ${pendentes} pendente${pendentes === 1 ? '' : 's'}</div>
+              <div class="action-btns">
+                <a href="detalhes.html?id=${c.id}" class="btn btn-outline btn-sm">Ver detalhes</a>
+                ${c.status === 'ativa' && futura
+                  ? `<button class="btn btn-ghost btn-sm" onclick="cancelarCarona(${c.id})">🚫 Cancelar carona</button>`
+                  : ''}
+                ${c.status === 'ativa' && !futura
+                  ? `<button class="btn btn-ghost btn-sm" onclick="concluirCarona(${c.id})">✅ Marcar como concluída</button>`
+                  : ''}
+              </div>
+            </div>`;
+        }).join('') + `</div>`;
+    }
+
+    function renderPendentes() {
+      const pendentes = solicitacoesTodas.filter(s => s.status === 'pendente');
+      document.getElementById('badge-pendentes-count').textContent = pendentes.length;
+
+      const container = document.getElementById('tab-pendentes');
+      if (!pendentes.length) {
+        container.innerHTML = `
+          <div class="empty-pending">
+            <div style="font-size:2.5rem; margin-bottom:.5rem;">🙌</div>
+            <div style="font-weight:600; margin-bottom:.25rem;">Nenhuma solicitação pendente</div>
+            <div style="font-size:.82rem;">Você está em dia com suas solicitações.</div>
+          </div>`;
+        return;
+      }
+
+      const grupos = {};
+      pendentes.forEach(s => {
+        const cid = s.carona.id;
+        if (!grupos[cid]) grupos[cid] = { carona: s.carona, itens: [] };
+        grupos[cid].itens.push(s);
+      });
+
+      container.innerHTML = Object.values(grupos).map(grupo => {
+        const c = grupo.carona;
+        const cardsHtml = grupo.itens.map(s => {
+          const p = s.passageiro || { nome: 'Passageiro', reputacao: 0 };
+          return `
+            <div class="solicitation-card">
+              <div class="passenger-header">
+                <div class="pass-avatar" style="background:linear-gradient(135deg,#6d4ba8,#4a5ba8);">${escapeHtml(iniciais(p.nome))}</div>
+                <div style="flex:1;">
+                  <div style="font-weight:700; font-size:.95rem;">${escapeHtml(p.nome)}</div>
+                  <div style="font-size:.78rem; color:var(--text-light); margin:.2rem 0;">⭐ ${Number(p.reputacao).toFixed(1)}</div>
+                </div>
+              </div>
+              ${s.mensagem ? `<div class="sol-meta"><span>💬 "${escapeHtml(s.mensagem)}"</span></div>` : ''}
+              <div class="action-btns">
+                <button class="btn btn-primary" style="flex:1;" onclick="aceitar(${s.id})">✅ Aceitar</button>
+                <button class="btn btn-danger" onclick="recusar(${s.id})">❌ Recusar</button>
+              </div>
+            </div>`;
+        }).join('');
+
+        return `
+          <div class="carona-section">
+            <div>
+              <div class="carona-section-info">🚗 ${escapeHtml(c.origem)} → ${escapeHtml(c.destino)} · ${fmtDataHora(c.data_hora)}</div>
+              <div class="carona-section-sub">${escapeHtml(c.veiculo || 'Veículo não informado')}</div>
+            </div>
+            <span class="badge badge-blue">${c.vagas_total - c.vagas_disp}/${c.vagas_total} ocupada</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:.85rem; margin-bottom:1.5rem;">
+            ${cardsHtml}
+          </div>`;
+      }).join('');
+    }
+
+    function renderSimples(tabName, status) {
+      const lista = solicitacoesTodas.filter(s => s.status === status);
+      const container = document.getElementById('tab-' + tabName);
+
+      if (!lista.length) {
+        container.innerHTML = `
+          <div class="empty-pending">
+            <div style="font-size:2.5rem; margin-bottom:.5rem;">${status === 'aceito' ? '✅' : '🙌'}</div>
+            <div style="font-weight:600; margin-bottom:.25rem;">${status === 'aceito' ? 'Nenhuma solicitação aceita ainda' : 'Nenhuma recusa recente'}</div>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = `<div style="display:flex; flex-direction:column; gap:.85rem;">` +
+        lista.map(s => {
+          const p = s.passageiro || { nome: 'Passageiro' };
+          const c = s.carona;
+          const jaAconteceu = new Date(c.data_hora) < new Date() && c.status !== 'cancelada';
+          const podeAvaliar = status === 'aceito' && jaAconteceu && !passageirosAvaliados.has(`${c.id}-${p.id}`);
+
+          return `
+            <div class="solicitation-card" style="opacity:.85;">
+              <div class="passenger-header">
+                <div class="pass-avatar" style="background:linear-gradient(135deg,#35459b,#1b6fc4);">${escapeHtml(iniciais(p.nome))}</div>
+                <div style="flex:1;">
+                  <div class="fw-700">${escapeHtml(p.nome)}</div>
+                  <div class="text-muted text-xs">${escapeHtml(c.origem)} → ${escapeHtml(c.destino)} · ${fmtDataHora(c.data_hora)}</div>
+                </div>
+                <span class="badge ${status === 'aceito' ? 'badge-green' : 'badge-gray'}">${status === 'aceito' ? '✅ Aceito' : '❌ Recusado'}</span>
+              </div>
+              ${podeAvaliar ? `
+                <div class="action-btns">
+                  <a href="avaliacao.html?carona_id=${c.id}&avaliado_id=${p.id}" class="btn btn-primary btn-sm">⭐ Avaliar passageiro</a>
+                </div>` : ''}
+            </div>`;
+        }).join('') + `</div>`;
+    }
+
+    async function aceitar(id) {
+      try {
+        await api('PATCH', `/solicitacoes/${id}`, { status: 'aceito' });
+        showToast('Solicitação aceita!', 'success');
+        carregarSolicitacoes();
+      } catch (err) {
+        showToast(err.message, 'warning');
+      }
+    }
+
+    async function recusar(id) {
+      if (!confirm('Deseja recusar esta solicitação?')) return;
+      try {
+        await api('PATCH', `/solicitacoes/${id}`, { status: 'recusado' });
+        carregarSolicitacoes();
+      } catch (err) {
+        showToast(err.message, 'warning');
+      }
+    }
+
+    async function concluirCarona(id) {
+      try {
+        await api('PATCH', `/caronas/${id}`, { status: 'concluida' });
+        showToast('Carona marcada como concluída. Agora dá pra avaliar.', 'success');
+        carregarSolicitacoes();
+      } catch (err) {
+        showToast(err.message, 'warning');
+      }
+    }
+
+    async function cancelarCarona(id) {
+      if (!confirm('Cancelar esta carona? As solicitações pendentes serão recusadas.')) return;
+      try {
+        await api('PATCH', `/caronas/${id}`, { status: 'cancelada' });
+        showToast('Carona cancelada.', 'success');
+        carregarSolicitacoes();
+      } catch (err) {
+        showToast(err.message, 'warning');
+      }
+    }
+
+    carregarSolicitacoes();
+  </script>
+</body>
+</html>

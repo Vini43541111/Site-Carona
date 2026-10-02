@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CaronaUni – Detalhes da Carona</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%9A%97%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    .detalhes-layout {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+    #map { height: 420px; border-radius: var(--radius); border: 1.5px solid var(--border); }
+    .sticky-panel { position: sticky; top: 74px; }
+
+    .driver-profile {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+    .driver-avatar-lg {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-mid), var(--secondary));
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 1.5rem; font-weight: 700;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .verified-badge {
+      position: absolute;
+      bottom: -2px; right: -2px;
+      background: var(--secondary);
+      border-radius: 50%;
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem;
+      border: 2px solid var(--surface);
+    }
+    .stars-display { display: flex; gap: 2px; }
+    .stars-display .star { color: var(--warning); font-size: 1rem; }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: .55rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: .88rem;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: var(--text-light); display: flex; align-items: center; gap: .4rem; }
+    .info-value { font-weight: 600; color: var(--text); }
+
+    .passengers-list { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .5rem; }
+    .passenger-chip {
+      display: flex; align-items: center; gap: .4rem;
+      background: var(--accent);
+      border-radius: 20px;
+      padding: .25rem .7rem;
+      font-size: .78rem;
+      color: var(--secondary-dk);
+    }
+    .passenger-avatar {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--secondary);
+      color: #fff; font-size: .65rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .request-box {
+      background: linear-gradient(135deg, rgba(0,200,83,.10), rgba(0,200,83,.04));
+      border: 1px solid rgba(0,200,83,.35);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .price-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      background: rgba(251,191,36,.12);
+      color: var(--warning);
+      padding: .3rem .8rem;
+      border-radius: 20px;
+      font-size: .82rem;
+      font-weight: 600;
+      border: 1px solid rgba(251,191,36,.35);
+    }
+
+    @media (max-width: 900px) {
+      .detalhes-layout { grid-template-columns: 1fr; }
+      .sticky-panel { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="dashboard.html" class="header-logo">🎓 <span>Carona</span>Uni</a>
+    <nav class="header-nav">
+      <a href="dashboard.html">🏠 Início</a>
+      <a href="buscar.html">🔍 Buscar Carona</a>
+      <a href="criar.html">➕ Oferecer</a>
+      <a href="solicitacoes.html">📋 Solicitações</a>
+      <a href="historico.html">📜 Histórico</a>
+    </nav>
+    <a href="perfil.html" class="header-user" style="text-decoration:none;">
+      <div class="avatar">·</div>
+      <span>Olá ▾</span>
+    </a>
+  </header>
+
+  <div class="page">
+    <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:1.25rem;">
+      <a href="buscar.html" class="btn btn-ghost btn-sm">← Voltar</a>
+      <h1 style="font-size:1.2rem; color:var(--primary);">Detalhes da Carona</h1>
+      <span class="badge badge-green" style="margin-left:auto;" id="badge-disponibilidade">✓ Disponível</span>
+    </div>
+
+    <div class="detalhes-layout">
+
+      <!-- Left Panel -->
+      <div class="sticky-panel">
+
+        <!-- Driver Profile -->
+        <div class="card" class="mb-1">
+          <div class="driver-profile">
+            <div class="driver-avatar-lg">
+              <span id="motorista-iniciais">–</span>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:1.05rem; font-weight:700;" id="motorista-nome">Carregando…</div>
+              <div style="font-size:.82rem; color:var(--text-light); margin-top:.25rem;" id="motorista-reputacao">–</div>
+            </div>
+          </div>
+
+          <!-- Route -->
+          <div class="mb-1">
+            <div class="route-point" style="display:flex;align-items:center;gap:.6rem;padding:.3rem 0;font-size:.9rem;">
+              <div class="route-dot origin" style="width:12px;height:12px;border-radius:50%;background:#00a651;flex-shrink:0;"></div>
+              <div>
+                <div style="font-weight:600;" id="carona-origem">–</div>
+                <div style="font-size:.75rem; color:var(--text-light);">Ponto de embarque</div>
+              </div>
+            </div>
+            <div style="border-left:2px dashed var(--border); margin-left:5px; height:20px;"></div>
+            <div class="route-point" style="display:flex;align-items:center;gap:.6rem;padding:.3rem 0;font-size:.9rem;">
+              <div class="route-dot dest" style="width:12px;height:12px;border-radius:50%;background:#1a4a7a;flex-shrink:0;"></div>
+              <div>
+                <div style="font-weight:600;" id="carona-destino">–</div>
+                <div style="font-size:.75rem; color:var(--text-light);">Destino</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Info Rows -->
+          <div class="info-row">
+            <span class="info-label">📅 Data</span>
+            <span class="info-value" id="carona-data">–</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">⏰ Horário</span>
+            <span class="info-value" id="carona-horario">–</span>
+          </div>
+          <div class="info-row" id="row-duracao" style="display:none;">
+            <span class="info-label">⏱ Trajeto</span>
+            <span class="info-value" id="carona-duracao">–</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">🚗 Veículo</span>
+            <span class="info-value" id="carona-veiculo">–</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">👥 Vagas disponíveis</span>
+            <span class="info-value" id="carona-vagas">–</span>
+          </div>
+          <div class="info-row" id="row-paradas" style="display:none;">
+            <span class="info-label">🛑 Paradas</span>
+            <span class="info-value" id="carona-paradas">–</span>
+          </div>
+          <div class="info-row" id="row-recorrente" style="display:none;">
+            <span class="info-label">🔁 Recorrente</span>
+            <span class="info-value" id="carona-dias">–</span>
+          </div>
+        </div>
+
+        <!-- Passengers -->
+        <div class="card" class="mb-1">
+          <div class="card-title" id="passageiros-titulo">👥 Passageiros Confirmados</div>
+          <div class="passengers-list" id="passengers-list"></div>
+        </div>
+
+        <!-- Preferences -->
+        <div class="card" class="mb-1">
+          <div class="card-title">💬 Observações do Motorista</div>
+          <p style="font-size:.85rem; color:var(--text-light); line-height:1.5;" id="carona-observacao">
+            –
+          </p>
+          <div style="display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.75rem;" id="carona-preferencias"></div>
+        </div>
+
+        <!-- Request Box -->
+        <div class="request-box" id="request-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.75rem;">
+            <div style="font-size:.9rem; font-weight:600; color:var(--secondary-dk);">Solicitar vaga nesta carona</div>
+            <span class="price-badge">🤝 Gratuita</span>
+          </div>
+          <div style="font-size:.82rem; color:var(--text-light); margin-bottom:1rem;">
+            O motorista vê sua solicitação e decide se aceita.
+          </div>
+          <button class="btn btn-primary btn-block btn-lg" onclick="abrirModal()" id="btn-solicitar">
+            🙋 Solicitar Vaga
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Right: Map + Reviews -->
+      <div>
+        <div class="card" style="padding:.7rem; margin-bottom:.75rem;">
+          <div class="text-muted">🗺 Trajeto aproximado da carona</div>
+        </div>
+        <div id="map"></div>
+
+        <!-- Reviews -->
+        <div class="card" style="margin-top:1.25rem;">
+          <div class="card-title" id="avaliacoes-titulo">⭐ Avaliações do motorista</div>
+          <div id="avaliacoes-resumo"></div>
+          <div id="avaliacoes-lista" style="display:flex; flex-direction:column; gap:1rem;"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Solicitação -->
+  <div class="modal-overlay" id="modal-solicitar">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">🙋 Confirmar Solicitação</div>
+        <button class="modal-close" aria-label="Fechar" onclick="fecharModal()">✕</button>
+      </div>
+      <div style="font-size:.88rem; color:var(--text-light); margin-bottom:1.25rem; line-height:1.5;">
+        Você está solicitando uma vaga na carona de <strong id="modal-motorista-nome">–</strong>:
+      </div>
+      <div style="background:var(--surface-2); border-radius:8px; padding:1rem; margin-bottom:1.25rem; font-size:.85rem;">
+        <div id="modal-resumo-rota">📍 –</div>
+        <div style="margin-top:.3rem;" id="modal-resumo-datahora">📅 –</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mensagem para o motorista (opcional)</label>
+        <textarea class="form-control" id="solicitacao-mensagem" rows="2" placeholder="Ex.: Vou estar na portaria do prédio..."></textarea>
+      </div>
+      <div style="display:flex; gap:.75rem; margin-top:.5rem;">
+        <button class="btn btn-primary" style="flex:1;" onclick="confirmarSolicitacao()">✅ Confirmar Solicitação</button>
+        <button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Sucesso -->
+  <div class="modal-overlay" id="modal-sucesso">
+    <div class="modal" class="text-center">
+      <div style="font-size:3.5rem; margin-bottom:.75rem;">📨</div>
+      <h2 style="color:var(--primary); margin-bottom:.5rem;">Solicitação Enviada!</h2>
+      <p style="color:var(--text-light); margin-bottom:1.5rem;">
+        <span id="modal-sucesso-nome">O motorista</span> vai ver sua solicitação e responder.
+      </p>
+      <div style="display:flex; gap:.75rem; justify-content:center;">
+        <a href="historico.html" class="btn btn-primary">Ver Minhas Caronas</a>
+        <a href="buscar.html" class="btn btn-ghost">Buscar Mais</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    exigirLogin();
+
+    const params   = new URLSearchParams(location.search);
+    const caronaId = params.get('id');
+    let caronaAtual = null;
+
+    const map = L.map('map').setView(MAP_CENTER, 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap', maxZoom: 19,
+    }).addTo(map);
+
+    const greenIcon = createPinIcon('#00a651');
+    const blueIcon  = createPinIcon('#1a4a7a');
+
+    /**
+     * Coordenadas da carona: usa as que foram salvas na publicação.
+     * Caronas antigas não têm — aí cai no geocoding do endereço.
+     */
+    async function coordenadasDaCarona(c) {
+      const salvas = c.origem_lat && c.origem_lng && c.destino_lat && c.destino_lng;
+      if (salvas) {
+        return [
+          [Number(c.origem_lat), Number(c.origem_lng)],
+          [Number(c.destino_lat), Number(c.destino_lng)],
+        ];
+      }
+      return Promise.all([geocodeEndereco(c.origem), geocodeEndereco(c.destino)]);
+    }
+
+    async function carregarCarona() {
+      if (!caronaId) {
+        showToast('Carona não informada.', 'warning');
+        return;
+      }
+      try {
+        caronaAtual = await api('GET', '/caronas/' + caronaId);
+      } catch (err) {
+        showToast(err.message, 'warning');
+        return;
+      }
+
+      const c = caronaAtual;
+      const motorista = c.motorista || { nome: 'Motorista', reputacao: 0 };
+      const dt = new Date(c.data_hora);
+      const dataFmt = dt.toLocaleDateString('pt-BR');
+      const horaFmt = dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+      document.getElementById('motorista-iniciais').textContent = iniciais(motorista.nome);
+      document.getElementById('motorista-nome').textContent = motorista.nome;
+      document.getElementById('motorista-reputacao').textContent = `${Number(motorista.reputacao).toFixed(1)} de reputação`;
+
+      document.getElementById('carona-origem').textContent  = c.origem;
+      document.getElementById('carona-destino').textContent = c.destino;
+      document.getElementById('carona-data').textContent    = dataFmt;
+      document.getElementById('carona-horario').textContent = horaFmt;
+      document.getElementById('carona-veiculo').textContent = c.veiculo || 'Não informado';
+      document.getElementById('carona-vagas').textContent   = `${c.vagas_disp} de ${c.vagas_total} vagas`;
+      document.getElementById('carona-observacao').textContent = c.observacao || 'Nenhuma observação informada.';
+
+      if (c.paradas) {
+        document.getElementById('row-paradas').style.display = '';
+        document.getElementById('carona-paradas').textContent = c.paradas;
+      }
+      if (c.dias_semana) {
+        document.getElementById('row-recorrente').style.display = '';
+        document.getElementById('carona-dias').textContent = c.dias_semana.split(',').join(' / ');
+      }
+
+      const prefs = [
+        c.tem_ar        ? '<span class="badge badge-blue">❄️ Ar-condicionado</span>' : '',
+        c.aceita_musica ? '<span class="badge badge-green">🎵 Música</span>' : '',
+        c.aceita_pets   ? '<span class="badge badge-green">🐾 Aceita pets</span>' : '<span class="badge badge-gray">🚫 Sem pets</span>',
+      ].filter(Boolean).join('');
+      document.getElementById('carona-preferencias').innerHTML = prefs;
+
+      // motorista não solicita a própria carona — o backend recusa, então nem mostro o box
+      if (motorista.id === getUsuario().id) {
+        document.getElementById('request-box').style.display = 'none';
+      }
+
+      const disponivel = c.status === 'ativa' && c.vagas_disp > 0;
+      const badge = document.getElementById('badge-disponibilidade');
+      badge.textContent = disponivel ? '✓ Disponível' : '✕ Sem vagas';
+      badge.className = 'badge ' + (disponivel ? 'badge-green' : 'badge-gray');
+
+      const aceitos = (c.solicitacoes || []).filter(s => s.status === 'aceito');
+      document.getElementById('passageiros-titulo').textContent =
+        `👥 Passageiros Confirmados (${aceitos.length}/${c.vagas_total})`;
+      document.getElementById('passengers-list').innerHTML =
+        aceitos.map(s => `
+          <div class="passenger-chip">
+            <div class="passenger-avatar">${escapeHtml(iniciais(s.passageiro ? s.passageiro.nome : '?'))}</div>
+            ${escapeHtml(s.passageiro ? s.passageiro.nome : 'Passageiro')}
+          </div>`).join('') +
+        Array.from({ length: c.vagas_disp }).map(() => `
+          <div class="passenger-chip" style="background:var(--surface-2);color:var(--text-light);border:1px dashed var(--border);">
+            + Vaga disponível
+          </div>`).join('');
+
+      document.getElementById('modal-motorista-nome').textContent = motorista.nome;
+      document.getElementById('modal-resumo-rota').textContent = `📍 ${c.origem} → ${c.destino}`;
+      document.getElementById('modal-resumo-datahora').textContent = `📅 ${dataFmt} · ⏰ ${horaFmt} · 🚗 ${c.veiculo || 'veículo não informado'}`;
+      document.getElementById('modal-sucesso-nome').textContent = motorista.nome;
+
+      carregarAvaliacoes(motorista);
+
+      const [origemCoord, destinoCoord] = await coordenadasDaCarona(c);
+
+      if (origemCoord)  L.marker(origemCoord,  { icon: greenIcon }).addTo(map).bindPopup(`📍 <b>Origem:</b> ${escapeHtml(c.origem)}`);
+      if (destinoCoord) L.marker(destinoCoord, { icon: blueIcon  }).addTo(map).bindPopup(`🏫 <b>Destino:</b> ${escapeHtml(c.destino)}`);
+
+      if (!origemCoord || !destinoCoord) {
+        if (origemCoord || destinoCoord) map.setView(origemCoord || destinoCoord, 14);
+        return;
+      }
+
+      // linha reta primeiro; a rota real substitui quando (e se) o OSRM responder
+      let traco = L.polyline([origemCoord, destinoCoord],
+        { color: '#00c853', weight: 4, opacity: .5, dashArray: '8,5' }).addTo(map);
+      map.fitBounds([origemCoord, destinoCoord], { padding: [40, 40] });
+
+      const rota = await calcularRota(origemCoord, destinoCoord);
+      if (rota) {
+        traco.remove();
+        traco = L.polyline(rota.coords, { color: '#00c853', weight: 5, opacity: .85 }).addTo(map);
+        map.fitBounds(traco.getBounds(), { padding: [40, 40] });
+      }
+
+      // duração: prefere o que foi salvo na publicação; senão o que o OSRM acabou de dar
+      const distancia = c.distancia_km ? Number(c.distancia_km) : (rota && rota.distanciaKm);
+      const duracao   = c.duracao_min  ? Number(c.duracao_min)  : (rota && rota.duracaoMin);
+      if (distancia && duracao) {
+        document.getElementById('row-duracao').style.display = '';
+        document.getElementById('carona-duracao').textContent = `~${duracao} min · ${distancia} km`;
+      }
+    }
+
+    async function carregarAvaliacoes(motorista) {
+      const tituloEl  = document.getElementById('avaliacoes-titulo');
+      const resumoEl  = document.getElementById('avaliacoes-resumo');
+      const listaEl   = document.getElementById('avaliacoes-lista');
+
+      let avaliacoes = [];
+      try {
+        avaliacoes = await api('GET', `/avaliacoes?avaliado_id=${motorista.id}`);
+      } catch (err) {
+        showToast(err.message, 'warning');
+        return;
+      }
+
+      const primeiroNome = motorista.nome.split(' ')[0];
+      tituloEl.textContent = `⭐ Avaliações de ${primeiroNome} (${avaliacoes.length} avaliaç${avaliacoes.length === 1 ? 'ão' : 'ões'})`;
+
+      if (!avaliacoes.length) {
+        resumoEl.innerHTML = '';
+        listaEl.innerHTML = `
+          <div style="padding:1.5rem 0; text-align:center; color:var(--text-light); font-size:.85rem;">
+            ${escapeHtml(primeiroNome)} ainda não recebeu avaliações.
+          </div>`;
+        return;
+      }
+
+      const media = avaliacoes.reduce((soma, a) => soma + a.nota, 0) / avaliacoes.length;
+      const pct = nota => Math.round(avaliacoes.filter(a => a.nota === nota).length / avaliacoes.length * 100);
+
+      resumoEl.innerHTML = `
+        <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:1.25rem; padding-bottom:1rem; border-bottom:1px solid var(--border);">
+          <div class="text-center">
+            <div style="font-size:3rem; font-weight:700; color:var(--primary); line-height:1;">${media.toFixed(1)}</div>
+            <div class="stars-display" style="justify-content:center;">
+              ${'<span class="star">★</span>'.repeat(Math.round(media))}
+            </div>
+            <div style="font-size:.72rem; color:var(--text-light); margin-top:.2rem;">de 5.0</div>
+          </div>
+          <div style="flex:1;">
+            ${[5, 4, 3, 2, 1].map(nota => `
+              <div style="display:flex; align-items:center; gap:.5rem; margin-bottom:.3rem; font-size:.8rem;">
+                <span style="min-width:52px;">${'★'.repeat(nota)}</span>
+                <div style="flex:1; height:6px; background:var(--surface-2); border-radius:3px; overflow:hidden;"><div style="width:${pct(nota)}%;height:100%;background:var(--warning);border-radius:3px;"></div></div>
+                <span style="color:var(--text-light); min-width:32px; text-align:right;">${pct(nota)}%</span>
+              </div>`).join('')}
+          </div>
+        </div>`;
+
+      listaEl.innerHTML = avaliacoes.map(a => {
+        const autor = a.avaliador ? a.avaliador.nome : 'Usuário';
+        const quando = new Date(a.createdAt).toLocaleDateString('pt-BR');
+        return `
+          <div style="padding-bottom:1rem; border-bottom:1px solid var(--border);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.4rem;">
+              <div style="display:flex; align-items:center; gap:.5rem; font-size:.88rem; font-weight:600;">
+                <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--primary-mid),var(--secondary));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.7rem;font-weight:700;">${escapeHtml(iniciais(autor))}</div>
+                ${escapeHtml(autor)}
+              </div>
+              <div style="display:flex; gap:2px; color:var(--warning);">${'★'.repeat(a.nota)}</div>
+            </div>
+            ${a.comentario ? `<p style="font-size:.83rem; color:var(--text-light); line-height:1.5;">"${escapeHtml(a.comentario)}"</p>` : ''}
+            <div style="font-size:.73rem; color:var(--text-light); margin-top:.3rem;">${quando}</div>
+          </div>`;
+      }).join('');
+    }
+
+    function abrirModal()  { openModal('modal-solicitar'); }
+    function fecharModal() { closeModal('modal-solicitar'); }
+
+    async function confirmarSolicitacao() {
+      const mensagem = document.getElementById('solicitacao-mensagem').value.trim();
+      try {
+        await api('POST', `/caronas/${caronaId}/solicitacoes`, { mensagem });
+        closeModal('modal-solicitar');
+        setTimeout(() => openModal('modal-sucesso'), 200);
+      } catch (err) {
+        showToast(err.message, 'warning');
+      }
+    }
+
+    carregarCarona();
+  </script>
+</body>
+</html>

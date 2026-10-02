@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CaronaUni – Meu Perfil</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%9A%97%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .profile-hero {
+      background: linear-gradient(135deg, #0b1522 0%, #12263c 55%, #0b3d24 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem 1.75rem 1.5rem;
+      color: #fff;
+      margin-bottom: 1.25rem;
+      text-align: center;
+      position: relative;
+    }
+    .profile-avatar {
+      width: 88px; height: 88px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.2);
+      border: 4px solid rgba(255,255,255,.5);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 0 auto 1rem;
+      position: relative;
+    }
+    .profile-name { font-size: 1.3rem; font-weight: 700; margin-bottom: .2rem; }
+    .profile-sub  { font-size: .85rem; opacity: .8; margin-bottom: .75rem; }
+    .profile-badges { display: flex; gap: .5rem; justify-content: center; flex-wrap: wrap; }
+    .profile-badge {
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 20px;
+      padding: .25rem .75rem;
+      font-size: .75rem;
+    }
+
+    .rating-big {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      padding: .5rem 0 1.25rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+    .rating-number { font-size: 3rem; font-weight: 700; color: var(--primary); line-height: 1; }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .5rem;
+      font-size: .88rem;
+      cursor: pointer;
+    }
+
+    .vehicle-card {
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: .85rem 1rem;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: .85rem;
+      margin-bottom: .65rem;
+    }
+    .vehicle-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    .profile-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media (max-width: 768px) { .profile-layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="dashboard.html" class="header-logo">🎓 <span>Carona</span>Uni</a>
+    <nav class="header-nav">
+      <a href="dashboard.html">🏠 Início</a>
+      <a href="buscar.html">🔍 Buscar Carona</a>
+      <a href="criar.html">➕ Oferecer</a>
+      <a href="solicitacoes.html">📋 Solicitações</a>
+      <a href="historico.html">📜 Histórico</a>
+    </nav>
+    <a href="perfil.html" class="header-user" style="text-decoration:none;">
+      <div class="avatar">·</div>
+      <span>Olá ▾</span>
+    </a>
+  </header>
+
+
+  <div class="page">
+
+    <!-- Hero -->
+    <div class="profile-hero">
+      <div class="profile-avatar">
+        <span id="profile-iniciais">–</span>
+      </div>
+      <div class="profile-name" id="profile-nome">Carregando…</div>
+      <div class="profile-sub" id="profile-sub">–</div>
+      <div class="profile-badges">
+        <span class="profile-badge" id="profile-curso">🎓 –</span>
+      </div>
+    </div>
+
+    <div class="profile-layout">
+
+      <!-- Esquerda -->
+      <div>
+        <div class="card" style="margin-bottom:1.25rem;">
+          <div class="card-title">⭐ Minha Reputação</div>
+
+          <div class="rating-big">
+            <div class="text-center">
+              <div class="rating-number" id="rep-nota">–</div>
+              <div style="display:flex;gap:2px;justify-content:center;color:var(--warning);font-size:1.1rem;" id="rep-estrelas"></div>
+              <div style="font-size:.75rem;color:var(--text-light);margin-top:.3rem;" id="rep-qtd">–</div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:1.5rem; font-size:.85rem; text-align:center;">
+            <div style="flex:1;"><div style="font-weight:700;color:var(--primary);" id="count-total">–</div><div style="color:var(--text-light);font-size:.75rem;">Caronas</div></div>
+            <div style="flex:1;"><div style="font-weight:700;color:var(--primary);" id="count-oferecidas">–</div><div style="color:var(--text-light);font-size:.75rem;">Oferecidas</div></div>
+            <div style="flex:1;"><div style="font-weight:700;color:var(--secondary);" id="count-realizadas">–</div><div style="color:var(--text-light);font-size:.75rem;">Como passageiro</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title flex-between">
+            👤 Dados Pessoais
+            <button class="btn btn-ghost btn-sm" onclick="abrirEdicaoPerfil()">✎ Editar</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:.2rem;">
+            <div class="info-row">
+              <span class="info-label">Nome</span>
+              <span class="fw-600" id="info-nome">–</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">E-mail</span>
+              <span class="fw-600" id="info-email">–</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Matrícula</span>
+              <span class="fw-600" id="info-matricula">–</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Curso</span>
+              <span class="fw-600" id="info-curso">–</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Telefone</span>
+              <span class="fw-600" id="info-telefone">–</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Direita -->
+      <div>
+        <div class="card" style="margin-bottom:1.25rem;">
+          <div class="card-title flex-between">
+            🚗 Meus Veículos
+            <button class="btn btn-ghost btn-sm" onclick="abrirVeiculo()">+ Adicionar</button>
+          </div>
+          <div id="veiculos-lista"></div>
+        </div>
+
+        <div class="card" style="margin-bottom:1.25rem;">
+          <div class="card-title">⚙️ Preferências de Carona</div>
+          <div style="display:flex;flex-direction:column;gap:.75rem;">
+            <label class="toggle-row"><span>🎵 Permite música no carro</span><input type="checkbox" id="pref_musica" onchange="salvarPreferencia(this)" /></label>
+            <label class="toggle-row"><span>🐾 Aceita animais de estimação</span><input type="checkbox" id="pref_pets" onchange="salvarPreferencia(this)" /></label>
+            <label class="toggle-row"><span>❄️ Ar-condicionado disponível</span><input type="checkbox" id="pref_ar" onchange="salvarPreferencia(this)" /></label>
+            <label class="toggle-row"><span>💬 Aceita bate-papo</span><input type="checkbox" id="pref_conversa" onchange="salvarPreferencia(this)" /></label>
+            <label class="toggle-row"><span>🔁 Aceita caronas recorrentes</span><input type="checkbox" id="pref_recorrente" onchange="salvarPreferencia(this)" /></label>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔔 Notificações</div>
+          <div style="display:flex;flex-direction:column;gap:.75rem;">
+            <label class="toggle-row"><span>Nova carona no meu trajeto</span><input type="checkbox" id="notif_nova_carona" onchange="salvarPreferencia(this)" /></label>
+            <label class="toggle-row"><span>Solicitação aceita/recusada</span><input type="checkbox" id="notif_solicitacao" onchange="salvarPreferencia(this)" /></label>
+            <label class="toggle-row"><span>Lembrete antes da carona</span><input type="checkbox" id="notif_lembrete" onchange="salvarPreferencia(this)" /></label>
+            <label class="toggle-row"><span>Avaliação pendente</span><input type="checkbox" id="notif_avaliacao" onchange="salvarPreferencia(this)" /></label>
+          </div>
+        </div>
+
+        <div style="margin-top:1rem; text-align:center;">
+          <a href="#" onclick="event.preventDefault(); logout();" style="font-size:.82rem; color:var(--danger); text-decoration:none;">🚪 Sair da conta</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal editar perfil -->
+  <div class="modal-overlay" id="modal-perfil">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">✎ Editar perfil</div>
+        <button class="modal-close" aria-label="Fechar" onclick="closeModal('modal-perfil')">✕</button>
+      </div>
+      <form onsubmit="salvarPerfil(event)">
+        <div class="form-group">
+          <label class="form-label">Nome completo</label>
+          <input type="text" id="e-nome" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Curso</label>
+          <input type="text" id="e-curso" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Telefone</label>
+          <input type="text" id="e-telefone" class="form-control" placeholder="49 99999-9999" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Salvar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal veículo -->
+  <div class="modal-overlay" id="modal-veiculo">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-veiculo-titulo">🚗 Novo veículo</div>
+        <button class="modal-close" aria-label="Fechar" onclick="closeModal('modal-veiculo')">✕</button>
+      </div>
+      <form onsubmit="salvarVeiculo(event)">
+        <div class="form-group">
+          <label class="form-label">Modelo</label>
+          <input type="text" id="v-modelo" class="form-control" placeholder="Ex.: Gol 2018" required />
+        </div>
+        <div class="form-row form-row-2">
+          <div class="form-group">
+            <label class="form-label">Cor</label>
+            <input type="text" id="v-cor" class="form-control" placeholder="Preto" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Placa</label>
+            <input type="text" id="v-placa" class="form-control" placeholder="ABC-1234" />
+          </div>
+        </div>
+        <label class="toggle-row" style="margin-bottom:1rem;">
+          <span>Usar como veículo principal</span>
+          <input type="checkbox" id="v-principal" />
+        </label>
+        <button type="submit" class="btn btn-primary btn-block">Salvar veículo</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    exigirLogin();
+
+    const CAMPOS_PREF = [
+      'pref_musica', 'pref_pets', 'pref_ar', 'pref_conversa', 'pref_recorrente',
+      'notif_nova_carona', 'notif_solicitacao', 'notif_lembrete', 'notif_avaliacao',
+    ];
+
+    let usuarioAtual = null;
+    let veiculoEditando = null;
+
+    async function carregarPerfil() {
+      try {
+        usuarioAtual = await api('GET', '/eu');
+      } catch (err) {
+        showToast(err.message, 'warning');
+        return;
+      }
+
+      const u = usuarioAtual;
+      document.getElementById('profile-iniciais').textContent = iniciais(u.nome);
+      document.getElementById('profile-nome').textContent = u.nome;
+      document.getElementById('profile-sub').textContent = u.email;
+      document.getElementById('profile-curso').textContent = '🎓 ' + (u.curso || 'Curso não informado');
+
+      document.getElementById('info-nome').textContent      = u.nome;
+      document.getElementById('info-email').textContent     = u.email;
+      document.getElementById('info-matricula').textContent = u.matricula;
+      document.getElementById('info-curso').textContent     = u.curso || 'Não informado';
+      document.getElementById('info-telefone').textContent  = u.telefone || 'Não informado';
+
+      const nota = Number(u.reputacao);
+      document.getElementById('rep-nota').textContent = nota.toFixed(1);
+      document.getElementById('rep-estrelas').textContent = '★'.repeat(Math.round(nota)) || '—';
+
+      CAMPOS_PREF.forEach(campo => { document.getElementById(campo).checked = u[campo] === true; });
+
+      // mantém o header em dia se o nome mudou
+      salvarSessao(getToken(), u);
+      preencherHeaderUsuario();
+    }
+
+    async function carregarContadores() {
+      try {
+        const { comoMotorista, comoPassageiro } = await api('GET', '/historico');
+        document.getElementById('count-total').textContent      = comoMotorista.length + comoPassageiro.length;
+        document.getElementById('count-oferecidas').textContent = comoMotorista.length;
+        document.getElementById('count-realizadas').textContent = comoPassageiro.length;
+      } catch (err) {
+        showToast(err.message, 'warning');
+      }
+    }
+
+    async function carregarAvaliacoesRecebidas() {
+      try {
+        const recebidas = await api('GET', `/avaliacoes?avaliado_id=${getUsuario().id}`);
+        document.getElementById('rep-qtd').textContent = recebidas.length
+          ? `${recebidas.length} avaliaç${recebidas.length === 1 ? 'ão' : 'ões'} recebida${recebidas.length === 1 ? '' : 's'}`
+          : 'Nenhuma avaliação ainda';
+      } catch (_) { /* silencioso: o número já aparece acima */ }
+    }
+
+    /* ───── preferências ───── */
+    async function salvarPreferencia(input) {
+      try {
+        usuarioAtual = await api('PATCH', `/usuarios/${getUsuario().id}`, { [input.id]: input.checked });
+        showToast('Preferência salva.', 'success');
+      } catch (err) {
+        input.checked = !input.checked; // desfaz visualmente se o backend recusou
+        showToast(err.message, 'warning');
+      }
+    }
+
+    /* ───── dados pessoais ───── */
+    function abrirEdicaoPerfil() {
+      document.getElementById('e-nome').value     = usuarioAtual.nome || '';
+      document.getElementById('e-curso').value    = usuarioAtual.curso || '';
+      document.getElementById('e-telefone').value = usuarioAtual.telefone || '';
+      openModal('modal-perfil');
+    }
+
+    async function salvarPerfil(e) {
+      e.preventDefault();
+      try {
+        await api('PATCH', `/usuarios/${getUsuario().id}`, {
+          nome:     document.getElementById('e-nome').value.trim(),
+          curso:    document.getElementById('e-curso').value.trim(),
+          telefone: document.getElementById('e-telefone').value.trim(),
+        });
+        closeModal('modal-perfil');
+        showToast('Perfil atualizado.', 'success');
+        carregarPerfil();
+      } catch (err) {
+        showToast(err.message, 'warning');
+      }
+    }
+
+    /* ───── veículos ───── */
+    async function carregarVeiculos() {
+      const container = document.getElementById('veiculos-lista');
+      let veiculos = [];
+      try {
+        veiculos = await api('GET', '/veiculos');
+      } catch (err) {
+        showToast(err.message, 'warning');
+        return;
+      }
+
+      if (!veiculos.length) {
+        container.innerHTML = `
+          <div style="padding:1.25rem 0; text-align:center; color:var(--text-light); font-size:.85rem;">
+            Nenhum veículo cadastrado. Adicione um para oferecer caronas.
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = veiculos.map(v => `
+        <div class="vehicle-card">
+          <div class="vehicle-icon">🚗</div>
+          <div style="flex:1;">
+            <div style="font-weight:600; font-size:.9rem;">${escapeHtml(v.modelo)}</div>
+            <div class="text-muted text-xs">${escapeHtml([v.cor, v.placa].filter(Boolean).join(' · ') || 'Sem detalhes')}</div>
+          </div>
+          ${v.principal
+            ? '<span class="badge badge-green">Principal</span>'
+            : `<button class="btn btn-ghost btn-sm" onclick="tornarPrincipal(${v.id})" title="Tornar principal" aria-label="Tornar veículo principal">☆</button>`}
+          <button class="btn btn-ghost btn-sm" onclick="abrirVeiculo(${v.id})" title="Editar" aria-label="Editar veículo">✎</button>
+          <button class="btn btn-ghost btn-sm" onclick="apagarVeiculo(${v.id})" title="Remover" aria-label="Remover veículo">🗑</button>
+        </div>`).join('');
+    }
+
+    async function abrirVeiculo(id) {
+      veiculoEditando = id || null;
+      document.getElementById('modal-veiculo-titulo').textContent = id ? '✎ Editar veículo' : '🚗 Novo veículo';
+
+      let v = { modelo: '', cor: '', placa: '', principal: false };
+      if (id) {
+        const veiculos = await api('GET', '/veiculos');
+        v = veiculos.find(x => x.id === id) || v;
+      }
+      document.getElementById('v-modelo').value = v.modelo || '';
+      document.getElementById('v-cor').value = v.cor || '';
+      document.getElementById('v-placa').value = v.placa || '';
+      document.getElementById('v-principal').checked = v.principal === true;
+
+      openModal('modal-veiculo');
+    }
+
+    async function salvarVeiculo(e) {
+      e.preventDefault();
+      const corpo = {
+        modelo:    document.getElementById('v-modelo').value.trim(),
+        cor:       document.getElementById('v-cor').value.trim(),
+        placa:     document.getElementById('v-placa').value.trim(),
+        principal: document.getElementById('v-principal').checked,
+      };
+      try {
+        if (veiculoEditando) await api('PATCH', `/veiculos/${veiculoEditando}`, corpo);
+        else                 await api('POST', '/veiculos', corpo);
+        closeModal('modal-veiculo');
+        showToast('Veículo salvo.', 'success');
+        carregarVeiculos();
+      } catch (err) {
+        showToast(err.message, 'warning');
+      }
+    }
+
+    async function tornarPrincipal(id) {
+      try {
+        await api('PATCH', `/veiculos/${id}`, { principal: true });
+        carregarVeiculos();
+      } catch (err) {
+        showToast(err.message, 'warning');
+      }
+    }
+
+    async function apagarVeiculo(id) {
+      if (!confirm('Remover este veículo?')) return;
+      try {
+        await api('DELETE', `/veiculos/${id}`);
+        showToast('Veículo removido.', 'success');
+        carregarVeiculos();
+      } catch (err) {
+        showToast(err.message, 'warning');
+      }
+    }
+
+    carregarPerfil();
+    carregarContadores();
+    carregarAvaliacoesRecebidas();
+    carregarVeiculos();
+  </script>
+</body>
+</html>

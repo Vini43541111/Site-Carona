@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CaronaUni – Avaliação</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%9A%97%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="css/style.css" />
   <style>
     .star-rating {
@@ -16,7 +17,7 @@
     }
     .star-rating .star {
       transition: transform .15s, color .15s;
-      color: #ddd;
+      color: #3a424e;
       user-select: none;
     }
     .star-rating .star:hover,
@@ -46,7 +47,7 @@
       font-size: .82rem;
       cursor: pointer;
       transition: all .15s;
-      background: #fff;
+      background: var(--surface-2);
     }
     .quick-tag:hover, .quick-tag.on {
       background: var(--accent);
@@ -56,7 +57,8 @@
     }
 
     .ride-summary-card {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%);
+      background: linear-gradient(135deg, #0b1522 0%, #12263c 100%);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 1.25rem;
       color: #fff;
@@ -75,9 +77,9 @@
     }
 
     .avaliacao-secao {
-      background: #fff;
+      background: var(--surface);
       border-radius: var(--radius);
-      border: 1.5px solid var(--border);
+      border: 1px solid var(--border);
       padding: 1.5rem;
       margin-bottom: 1rem;
     }
@@ -96,12 +98,12 @@
       justify-content: space-between;
       align-items: center;
       padding: .65rem 0;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid var(--border);
       font-size: .88rem;
     }
     .criterio-row:last-child { border-bottom: none; }
     .criterio-stars { display: flex; gap: 3px; }
-    .criterio-star { font-size: 1.1rem; color: #ddd; cursor: pointer; transition: color .1s; }
+    .criterio-star { font-size: 1.1rem; color: #3a424e; cursor: pointer; transition: color .1s; }
     .criterio-star.on { color: var(--warning); }
   </style>
 </head>
@@ -115,12 +117,11 @@
       <a href="criar.html">➕ Oferecer</a>
       <a href="solicitacoes.html">📋 Solicitações</a>
       <a href="historico.html">📜 Histórico</a>
-      <a href="documentacao.html">📄 Docs</a>
     </nav>
-    <div class="header-user">
-      <div class="avatar">V</div>
-      <span>Olá, Vinicius ▾</span>
-    </div>
+    <a href="perfil.html" class="header-user" style="text-decoration:none;">
+      <div class="avatar">·</div>
+      <span>Olá ▾</span>
+    </a>
   </header>
 
   <div class="page-sm">
@@ -134,24 +135,21 @@
     <div class="ride-summary-card">
       <div class="ride-summary-icon">🚗</div>
       <div>
-        <div style="font-weight:700; font-size:1rem; margin-bottom:.25rem;">
-          Centro → Campus Unoesc
+        <div style="font-weight:700; font-size:1rem; margin-bottom:.25rem;" id="resumo-rota">
+          Carregando…
         </div>
-        <div style="font-size:.82rem; opacity:.85;">
-          📅 09/04/2026 · ⏰ 07:30 · Carlos Medeiros · Fiat Uno Prata
-        </div>
-        <div style="font-size:.78rem; opacity:.7; margin-top:.2rem;">
-          ⏱ Duração: 19 min · 📏 ~12 km
+        <div style="font-size:.82rem; opacity:.85;" id="resumo-datahora">
+          📅 –
         </div>
       </div>
     </div>
 
     <!-- Avaliação Geral -->
     <div class="avaliacao-secao">
-      <div class="secao-title">👤 Avaliar Carlos Medeiros</div>
+      <div class="secao-title" id="titulo-avaliado">👤 Avaliar</div>
 
       <div class="text-center">
-        <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--primary-mid),var(--secondary));display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.8rem;font-weight:700;margin:0 auto .75rem;">CM</div>
+        <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--primary-mid),var(--secondary));display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.8rem;font-weight:700;margin:0 auto .75rem;" id="avaliado-iniciais">–</div>
         <div style="font-size:.9rem; color:var(--text-light); margin-bottom:.5rem;">Como foi sua experiência com este motorista?</div>
       </div>
 
@@ -235,14 +233,14 @@
     <div class="avaliacao-secao">
       <div class="secao-title">💬 Comentário (opcional)</div>
       <textarea class="form-control" rows="3" id="comentario"
-        placeholder="Conte como foi sua experiência com Carlos. Seu comentário ajuda outros usuários!"></textarea>
+        placeholder="Conte como foi sua experiência. Seu comentário ajuda outros usuários!"></textarea>
       <div style="font-size:.75rem; color:var(--text-light); margin-top:.3rem; text-align:right;" id="char-count">0/200 caracteres</div>
     </div>
 
     <!-- Denúncia -->
-    <div style="background:#fff3e0; border-radius:var(--radius); border:1px solid #ffcc80; padding:1rem; margin-bottom:1.5rem;">
-      <label style="display:flex; align-items:center; gap:.6rem; cursor:pointer; font-size:.85rem; color:#e65100;">
-        <input type="checkbox" style="accent-color:#e65100; width:16px; height:16px;" />
+    <div style="background:rgba(251,191,36,.10); border-radius:var(--radius); border:1px solid rgba(251,191,36,.3); padding:1rem; margin-bottom:1.5rem;">
+      <label style="display:flex; align-items:center; gap:.6rem; cursor:pointer; font-size:.85rem; color:var(--warning);">
+        <input type="checkbox" style="width:16px; height:16px;" />
         ⚠️ Tive um problema com esta carona (quero reportar)
       </label>
     </div>
@@ -263,7 +261,7 @@
       <div style="font-size:4rem; margin-bottom:.5rem;">🌟</div>
       <h2 style="color:var(--primary); margin-bottom:.5rem;">Avaliação Enviada!</h2>
       <p style="color:var(--text-light); margin-bottom:.5rem;">
-        Carlos recebeu sua avaliação. Obrigado por contribuir com a comunidade!
+        <span id="modal-ok-nome">O motorista</span> recebeu sua avaliação. Obrigado por contribuir com a comunidade!
       </p>
       <p style="font-size:.82rem; color:var(--text-light); margin-bottom:1.5rem;">
         Sua nota ajuda outros usuários a escolherem bons motoristas. 🎓
@@ -275,10 +273,63 @@
     </div>
   </div>
 
+  <script src="js/api.js"></script>
   <script>
+    exigirLogin();
+
+    const params    = new URLSearchParams(location.search);
+    const caronaId  = params.get('carona_id');
+    const avaliadoId = params.get('avaliado_id');
+
     let geralSelected = 0;
+    const detalhes = {};
+    let jaAvaliado = false;
 
     const labels = ['', 'Muito ruim 😞', 'Ruim 😕', 'Regular 😐', 'Bom 😊', 'Excelente! 🤩'];
+
+    function bloquearEnvio(motivo) {
+      const btn = document.getElementById('btn-avaliar');
+      btn.disabled = true;
+      btn.style.opacity = '.5';
+      btn.textContent = motivo;
+    }
+
+    async function carregarContexto() {
+      if (!caronaId || !avaliadoId) {
+        document.getElementById('resumo-rota').textContent = 'Carona não informada';
+        document.getElementById('resumo-datahora').textContent = 'Abra esta tela pelo histórico, no botão "Avaliar agora".';
+        bloquearEnvio('⭐ Carona não informada');
+        return;
+      }
+
+      try {
+        const carona = await api('GET', '/caronas/' + caronaId);
+        const dt = new Date(carona.data_hora);
+
+        // o avaliado é o motorista da carona; se não bater, busca o nome na lista de usuários
+        let avaliado = carona.motorista;
+        if (!avaliado || avaliado.id !== Number(avaliadoId)) {
+          const usuarios = await api('GET', '/usuarios');
+          avaliado = usuarios.find(u => u.id === Number(avaliadoId)) || { nome: 'Usuário' };
+        }
+
+        document.getElementById('resumo-rota').textContent = `${carona.origem} → ${carona.destino}`;
+        document.getElementById('resumo-datahora').textContent =
+          `📅 ${dt.toLocaleDateString('pt-BR')} · ⏰ ${dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} · ${avaliado.nome} · ${carona.veiculo || 'veículo não informado'}`;
+        document.getElementById('titulo-avaliado').textContent = `👤 Avaliar ${avaliado.nome}`;
+        document.getElementById('avaliado-iniciais').textContent = iniciais(avaliado.nome);
+        document.getElementById('modal-ok-nome').textContent = avaliado.nome;
+
+        const minhas = await api('GET', `/avaliacoes?carona_id=${caronaId}&avaliador_id=${getUsuario().id}`);
+        if (minhas.length) {
+          jaAvaliado = true;
+          bloquearEnvio('⭐ Você já avaliou esta carona');
+        }
+      } catch (err) {
+        showToast(err.message, 'warning');
+        bloquearEnvio('⭐ Não foi possível carregar a carona');
+      }
+    }
 
     function hoverStar(val) {
       document.querySelectorAll('#star-geral .star').forEach((s, i) => {
@@ -298,14 +349,23 @@
         s.classList.toggle('selected', i < val);
       });
       document.getElementById('rating-label').textContent = labels[val];
+      if (jaAvaliado) return;
       document.getElementById('btn-avaliar').disabled = false;
       document.getElementById('btn-avaliar').style.opacity = '1';
     }
+
+    const CRITERIO_LABEL = {
+      pontualidade: 'Pontualidade',
+      conducao: 'Qualidade da condução',
+      limpeza: 'Limpeza do veículo',
+      comunicacao: 'Comunicação',
+    };
 
     function setDetalhe(el, val) {
       const group = el.closest('.criterio-stars');
       const stars = group.querySelectorAll('.criterio-star');
       stars.forEach((s, i) => s.classList.toggle('on', i < val));
+      detalhes[group.dataset.key] = val;
     }
 
     document.getElementById('comentario').addEventListener('input', function() {
@@ -314,7 +374,42 @@
       document.getElementById('char-count').textContent = `${Math.min(len, 200)}/200 caracteres`;
     });
 
-    function enviarAvaliacao() { openModal('modal-ok'); }
+    async function enviarAvaliacao() {
+      if (!caronaId || !avaliadoId) {
+        showToast('Carona ou avaliado não informado.', 'warning');
+        return;
+      }
+
+      const partesCriterios = Object.entries(detalhes)
+        .filter(([, val]) => val > 0)
+        .map(([key, val]) => `${CRITERIO_LABEL[key] || key}: ${val}/5`);
+
+      const tags = Array.from(document.querySelectorAll('#quick-tags .quick-tag.on'))
+        .map(el => el.textContent.trim());
+
+      const livre = document.getElementById('comentario').value.trim();
+
+      const partes = [];
+      if (partesCriterios.length) partes.push(partesCriterios.join(', '));
+      if (tags.length) partes.push('Destaques: ' + tags.join(', '));
+      if (livre) partes.push(livre);
+      const comentario = partes.join(' | ');
+
+      try {
+        await api('POST', '/avaliacoes', {
+          carona_id: Number(caronaId),
+          avaliado_id: Number(avaliadoId),
+          nota: geralSelected,
+          comentario,
+        });
+        jaAvaliado = true;
+        openModal('modal-ok');
+      } catch (err) {
+        showToast(err.message, 'warning');
+      }
+    }
+
+    carregarContexto();
   </script>
   <script src="js/app.js"></script>
 </body>

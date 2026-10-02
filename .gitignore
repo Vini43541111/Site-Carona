@@ -1,0 +1,25 @@
+# Segredos — NUNCA commitar (contém senha do banco e JWT_SECRET)
+.env
+.env.local
+*.env
+!.env.example
+
+# Dependências
+node_modules/
+
+# Banco local do SQLite (modo alternativo)
+*.sqlite
+*.sqlite3
+
+# Logs e temporários
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Config local do Claude Code — registra comandos aprovados, pode conter segredo
+.claude/
