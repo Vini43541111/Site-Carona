@@ -23,3 +23,6 @@ Thumbs.db
 
 # Config local do Claude Code — registra comandos aprovados, pode conter segredo
 .claude/
+node_modules
+.env
+*.sqlite
